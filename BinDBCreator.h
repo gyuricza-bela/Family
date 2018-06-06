@@ -42,8 +42,9 @@ public:
 	void Free( void );
 	BOOL IsSelected( DWORD dwID );
 	BOOL Do();
-	BOOL ProcessDB_1( LPCSTR lpcDBName, int iDB, int iAct, int iMaxDB );
-	BOOL ProcessDB_2( DWORD dwRogzitoID, LPCSTR lpcDBName, int iDB, int iAct, int iMaxDB );
+   BOOL ProcessDB_0( LPCSTR lpcDBName, int iDB, int iAct, int iMaxDB );
+   BOOL ProcessDB_1( LPCSTR lpcDBName, int iDB, int iAct, int iMaxDB );
+   BOOL ProcessDB_2( DWORD dwRogzitoID, LPCSTR lpcDBName, int iDB, int iAct, int iMaxDB );
 	BOOL AppendWord( LPCSTR lpcWord );
 	DWORD FindWord( LPCSTR lpcWord );
 	DWORD FindWordB( LPCSTR lpcWord );

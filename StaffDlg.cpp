@@ -56,7 +56,7 @@ BOOL CStaffDlg::OnInitDialog()
 
 		CAttributeTypeSet ats;
 		ats.m_strFilter.Format( "([DataType]=%d)", dts.m_DataTypeID );
-		ats.m_strSort = _T("[Order]");
+		ats.m_strSort = _T("[Order],[DataType]");
 		ats.Open();
 		for( int j = 0; !ats.IsEOF(); j++ )
 		{
@@ -110,9 +110,15 @@ void CStaffDlg::OnButtonAdd()
 			str += "Adattípus: \"SZÓTÁR (kötelezõ)\"";
 		else if( pid == 5 )
 			str += "Adattípus: \"SZÓTÁR (választható)\"";
-		else if( pid == 6 )
-			str += "Adattípus: \"DÁTUM (intervallum)\"";
-		if( !str.IsEmpty() )
+      else if( pid == 6 )
+         str += "Adattípus: \"DÁTUM (intervallum)\"";
+      else if( pid == 7 )
+         str += "Adattípus: \"DÁTUM (év)\"";
+      else if( pid == 8 )
+         str += "Adattípus: \"DÁTUM (hó)\"";
+      else if( pid == 9 )
+         str += "Adattípus: \"DÁTUM (nap)\"";
+      if( !str.IsEmpty() )
 		{
 			CAttributeNameDlg and;
 			and.m_stcMsg = str;
@@ -201,9 +207,15 @@ void CStaffDlg::OnButtonMod()
 			str += "Adattípus: \"SZÓTÁR (kötelezõ)\"";
 		else if( pid == 5 )
 			str += "Adattípus: \"SZÓTÁR (választható)\"";
-		else if( pid == 6 )
-			str += "Adattípus: \"DÁTUM (intervallum)\"";
-		if( !str.IsEmpty() )
+      else if( pid == 6 )
+         str += "Adattípus: \"DÁTUM (intervallum)\"";
+      else if( pid == 7 )
+         str += "Adattípus: \"DÁTUM (év)\"";
+      else if( pid == 8 )
+         str += "Adattípus: \"DÁTUM (hó)\"";
+      else if( pid == 9 )
+         str += "Adattípus: \"DÁTUM (nap)\"";
+      if( !str.IsEmpty() )
 		{
 			CAttributeNameDlg and;
 			and.m_stcMsg = str;
@@ -301,8 +313,11 @@ void CStaffDlg::OnButtonDel()
 			case 1:
 			case 2:
 			case 3:
-			case 6:
-			{
+         case 6:
+         case 7:
+         case 8:
+         case 9:
+         {
 				CAttributeTypeSet ats;
 				ats.m_strFilter.Format( "([AttributeID]=%d)", dwAttributeID );
 				ats.Open();
@@ -355,8 +370,11 @@ void CStaffDlg::OnSelchangedTree(NMHDR* pNMHDR, LRESULT* pResult)
 			case 3:	// település
 			case 4:	// csak szótár
 			case 5:	// lehet szótár
-			case 6:	// lehet szótár
-				GetDlgItem( IDC_BUTTON_ADD )->EnableWindow( TRUE );
+         case 6:	// dátum - intervallum
+         case 7:	// dátum - év
+         case 8:	// dátum - hó
+         case 9:	// dátum - nap
+            GetDlgItem( IDC_BUTTON_ADD )->EnableWindow( TRUE );
 				GetDlgItem( IDC_BUTTON_MOD )->EnableWindow( FALSE );
 				GetDlgItem( IDC_BUTTON_DEL )->EnableWindow( FALSE );
 				break;
@@ -379,8 +397,11 @@ void CStaffDlg::OnSelchangedTree(NMHDR* pNMHDR, LRESULT* pResult)
 				case 1:	// datum
 				case 2:	// szám
 				case 3:	// település
-				case 6:	// település
-					GetDlgItem( IDC_BUTTON_ADD )->EnableWindow( FALSE );
+            case 6:	// dátum - intervallum
+            case 7:	// dátum - év
+            case 8:	// dátum - hó
+            case 9:	// dátum - nap
+               GetDlgItem( IDC_BUTTON_ADD )->EnableWindow( FALSE );
 					GetDlgItem( IDC_BUTTON_MOD )->EnableWindow( TRUE );
 					GetDlgItem( IDC_BUTTON_DEL )->EnableWindow( TRUE );
 					break;

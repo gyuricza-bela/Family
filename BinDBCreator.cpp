@@ -118,8 +118,10 @@ BOOL CBinDBCreator::Do()
 			fSrcDB.Write( puff, 60 );
 			CString str;
 			str.Format( "%s%s\\Ver%05d\\srcdb.mdb", MAIN_DIR, ss.m_Directory, ss.m_ID );
-			if( ProcessDB_1( str, i, n++, iMaxDatabase ) == FALSE )
-				return( FALSE );
+         if( ProcessDB_0( str, i, n, iMaxDatabase ) == FALSE )
+            return FALSE;
+         if( ProcessDB_1( str, i, n++, iMaxDatabase ) == FALSE )
+				return FALSE;
 		}
 		ss.MoveNext();
 	}
@@ -162,6 +164,79 @@ BOOL CBinDBCreator::Do()
 		}
 
 	return( Save_2() );
+}
+
+std::map<int, int> mapDateOrder;
+std::map<int, int> mapOrderDate;
+std::map<int, int> mapDatepartDate;
+std::map<int, int> mapDatepartDataType;
+
+BOOL CBinDBCreator::ProcessDB_0( LPCSTR lpcDBName, int iDB, int iAct, int iMaxDB )
+{
+   if( mapOrderDate.size() == 0 )
+   {
+      CAttributeTypeSet ats;
+      ats.m_strSort = _T( "[Order],[DataType]" );
+      ats.m_strDBName = lpcDBName;
+      ats.Open();
+      while( !ats.IsEOF() )
+      {
+         if( ats.m_DataType == 1 )
+         {
+            mapDateOrder[ ats.m_AttributeID ] = ats.m_Order;
+            mapOrderDate[ ats.m_Order ] = ats.m_AttributeID;
+         }
+         else if( ats.m_DataType >= 7 )
+         {
+            mapDatepartDate[ ats.m_AttributeID ] = mapOrderDate[ ats.m_Order ];
+            mapDatepartDataType[ ats.m_AttributeID ] = ats.m_DataType;
+         }
+         ats.MoveNext();
+      }
+   }
+
+   CAttributesSet pats;
+   pats.m_strDBName = lpcDBName;
+   pats.m_strSort = _T( "[PID]" );
+   pats.Open();
+
+   int iPrev = 0;
+   std::map<int,int> mapFields;
+   std::map<int, CString> mapDateData;
+
+   while( !pats.IsEOF() )
+   {
+      if( pats.m_PID != iPrev )
+      {
+         if( iPrev > 0 )
+         {
+            for( auto a : mapFields )
+            {
+
+            }
+         }
+         iPrev = 0;
+         mapFields.clear();
+         mapDateData.clear();
+      }
+
+      int iField = 0;
+      if( mapDateOrder.find( pats.m_AttributeID ) != mapDateOrder.end() )
+      {
+         mapFields[ pats.m_AttributeID ] |= 8;
+         mapDateData[ pats.m_AttributeID ] = pats.m_Value;
+         iField = mapFields[ pats.m_AttributeID ];
+      }
+      else if( mapDatepartDataType.find( pats.m_AttributeID ) != mapDatepartDataType.end() )
+      {
+         iField = 1 << ( mapDatepartDataType[ pats.m_AttributeID ] - 7 );
+         mapFields[ mapDatepartDate[ pats.m_AttributeID ] ] |= iField;
+         iField = mapFields[ mapDatepartDate[ pats.m_AttributeID ] ];
+      }
+
+      pats.MoveNext();
+   }
+   return( TRUE );
 }
 
 BOOL CBinDBCreator::ProcessDB_1( LPCSTR lpcDBName, int iDB, int iAct, int iMaxDB )
