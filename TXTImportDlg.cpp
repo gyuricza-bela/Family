@@ -298,7 +298,8 @@ void CTXTImportDlg::OnOK()
 	CString strLine, strTXT, strMDB, strSRC;
 	CFileStatus fs;
 
-	strSRC.Format( "%s%s\\Exp%05d\\srcdb.mdb", MAIN_DIR, m_strDir, m_dwSrcID );
+	// strSRC.Format( "%s%s\\Exp%05d\\srcdb.mdb", MAIN_DIR, m_strDir, m_dwSrcID );
+   strSRC = SRCDB_NAME;
 	if( !CFile::GetStatus( strSRC, fs ) )
 	{
 		CString str = "Forrás adatbázis nem létezik (" + strSRC + ")!";
@@ -379,6 +380,10 @@ void CTXTImportDlg::OnOK()
 					puff[ c ] = '\0';
 					iCount++;
 				}
+         if( iCount > m_iTXTFieldCount )
+         {
+            iCount = m_iTXTFieldCount;
+         }
 			int n = 0;
 			strVezeteknev.Empty();
 			strKeresztnev.Empty();
@@ -445,7 +450,7 @@ void CTXTImportDlg::FormatValueDType( DWORD dwATP, LPCSTR lpcSrc, LPSTR lpcDesc,
 				break;
 		return;			// szöveg, település, szótár (kötelezõ, bõvíthetõ)
 	}
-	if( dwATP == 1 )	// dátum
+	if( dwATP == 1 || dwATP == 7 || dwATP == 8 || dwATP == 9 )	// dátum
 	{
 		int n = 0;
 		for( int i = 0; lpcDesc[ n ] = lpcSrc[ i ]; i++ )
@@ -453,7 +458,13 @@ void CTXTImportDlg::FormatValueDType( DWORD dwATP, LPCSTR lpcSrc, LPSTR lpcDesc,
 				n++;
 			else
 				lpcDesc[ n ] = '\0';
-		if( n == 4 )
+      if( n < 4 || dwATP > 1 )
+      {
+         int iDatePart = atoi( lpcDesc );
+         if( iDatePart > 0 )
+            wsprintf( lpcDesc, "%d", iDatePart );
+      }
+		else if( n == 4 )
 		{
 			int iYear = atoi( lpcDesc );
 			if( iYear > 0 )
