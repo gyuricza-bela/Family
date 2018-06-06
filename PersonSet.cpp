@@ -17,7 +17,7 @@ IMPLEMENT_DYNAMIC(CPersonSet, CDaoRecordset)
 #endif //_DEBUG
 /////////////////////////////////////////////////////////////////////////////
 
-CPersonSet::CPersonSet( CDaoDatabase* pdb ) : CDaoRecordset( pdb )
+CPersonSet::CPersonSet(RecordsetTypeEnum eDB, CDaoDatabase* pdb ) : CDaoRecordset( pdb )
 {
 	//{{AFX_FIELD_INIT(CPersonSet)
 	m_PID = 0;
@@ -25,7 +25,7 @@ CPersonSet::CPersonSet( CDaoDatabase* pdb ) : CDaoRecordset( pdb )
 	m_FirstName = _T("");
 	m_nFields = 3;
 	//}}AFX_FIELD_INIT
-	m_nDefaultType = dbOpenDynaset;
+	m_nDefaultType = eDB; // dbOpenDynaset;
 }
 
 CString CPersonSet::GetDefaultDBName()

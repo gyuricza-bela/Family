@@ -1,54 +1,59 @@
-#ifndef _WORKDB_H_
-#define _WORKDB_H_
+// WorkDB.h : main header file for the WORKDB application
+//
+
+#if !defined(AFX_WORKDB_H__F00BC4B5_A2EE_11D4_9B76_006052042321__INCLUDED_)
+#define AFX_WORKDB_H__F00BC4B5_A2EE_11D4_9B76_006052042321__INCLUDED_
+
+#if _MSC_VER > 1000
 #pragma once
+#endif // _MSC_VER > 1000
 
 #ifndef __AFXWIN_H__
 	#error include 'stdafx.h' before including this file for PCH
 #endif
 
 #include "resource.h"		// main symbols
-#include "AttributeType.h"
+#include "AttributeType.h"		// main symbols
+
+/////////////////////////////////////////////////////////////////////////////
+// CWorkDBApp:
+// See WorkDB.cpp for the implementation of this class
+//
 
 // #define ONLY_QUERY
 
-#define MAIN_DIR  (((CWorkDBApp*)AfxGetApp())->GetMainDir())
-#define DB_SERVER (((CWorkDBApp*)AfxGetApp())->GetServer())
-#define DB_PORT   (((CWorkDBApp*)AfxGetApp())->GetPort())
-#define DB_USER   (((CWorkDBApp*)AfxGetApp())->GetUser())
-#define DB_PWD    (((CWorkDBApp*)AfxGetApp())->GetPwd())
-#define DB_NAME   (((CWorkDBApp*)AfxGetApp())->GetDBName())
+#define MAIN_DIR ((CWorkDBApp*)AfxGetApp())->m_strMainDir
+#define WORKDB_NAME ((CWorkDBApp*)AfxGetApp())->m_strWorkDBName
+#define SRCDB_NAME ((CWorkDBApp*)AfxGetApp())->m_strSrcDBName
 
 class CWorkDBApp : public CWinApp
 {
 public:
 	CWorkDBApp();
+	CString m_strMainDir;
+	CString m_strWorkDBName;
+	CString m_strSrcDBName;
 
-   bool LoadINI( bool bLogin );
-
-   const CString& GetMainDir(){ return( m_strMainDir ); }
-   
-   const CString& GetServer() { return( m_strSQLServer ); }
-   const CString& GetUser()   { return( m_strUser      ); }
-   const CString& GetPwd()    { return( m_strPwd       ); }
-   const CString& GetDBName() { return( m_strDBName    ); }
-
-   const int GetPort() { return( m_iSQLPort ); }
-
-   void SetUser( LPCTSTR lpcUser );
-   void SetPwd ( LPCTSTR lpcPwd  );
-
-protected:
+// Overrides
+	// ClassWizard generated virtual function overrides
+	//{{AFX_VIRTUAL(CWorkDBApp)
+	public:
 	virtual BOOL InitInstance();
+	//}}AFX_VIRTUAL
 
-   CString  m_strMainDir;
+// Implementation
 
-   int      m_iSQLPort;
-   CString  m_strSQLServer;
-   CString  m_strUser;
-   CString  m_strPwd;
-   CString  m_strDBName;
-
+	//{{AFX_MSG(CWorkDBApp)
+		// NOTE - the ClassWizard will add and remove member functions here.
+		//    DO NOT EDIT what you see in these blocks of generated code !
+	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 };
 
-#endif // _WORKDB_H_
+
+/////////////////////////////////////////////////////////////////////////////
+
+//{{AFX_INSERT_LOCATION}}
+// Microsoft Visual C++ will insert additional declarations immediately before the previous line.
+
+#endif // !defined(AFX_WORKDB_H__F00BC4B5_A2EE_11D4_9B76_006052042321__INCLUDED_)

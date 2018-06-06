@@ -1,10 +1,7 @@
 #include "stdafx.h"
 #include "WorkDB.h"
 #include "AttributeType.h"
-#include "MySQLRecordSet.h"
-
-#define __LCC__ 
-#include <mysql.h>
+#include "AttributeTypeSet.h"
 
 void CAttributeType::Free( void )
 {
@@ -13,43 +10,107 @@ void CAttributeType::Free( void )
 	m_theArray.RemoveAll();
 }
 
-int CAttributeType::LoadSQL( void )
+int CAttributeType::Load( LPCSTR lpcDir, DWORD dwSrcID, LPCSTR lpcOrder )
 {
-	CString strSQL;
-	int iRet = 0;
-
-	strSQL.Format( "SELECT AttributeID, AttributeName, LastValue, Flag, DataType, FlagOrder FROM AttributeType ORDER BY FlagOrder" );
-
-   CMySQLRecordSet rs;
-   MYSQL_RES *res = rs.ExecuteQuery( strSQL );
-   
-   if( res != NULL ) 
+	CAttributeTypeSet ats;
+	ats.m_strSort = lpcOrder;
+	if( dwSrcID > 0 )
+		ats.m_strDBName.Format( "%s%s\\Exp%05d\\srcdb.mdb", MAIN_DIR, lpcDir, dwSrcID );
+	else
+		ats.m_strDBName.Format( "%ssrcdb.mdb", MAIN_DIR );
+	int ret = 0;
+	TRY
 	{
-	   MYSQL_ROW row;
-
-		while( row = mysql_fetch_row( res ) )
+		ats.Open();
+   int i = 0;
+		for( ; !ats.IsEOF(); i++ )
 		{
 			ATTRIBUTE_TYPE *pAT		= (ATTRIBUTE_TYPE*) new ATTRIBUTE_TYPE;
 			if( pAT == NULL )
 				break;
-			iRet++;
-			pAT->m_lAttributeID		= atoi( row[ 0 ] );
-			pAT->m_strAttributeName	= row[ 1 ];
-			pAT->m_strLastValue		= row[ 2 ];
-			pAT->m_iFlag				= atoi( row[ 3 ] );
-			pAT->m_iDataType			= atoi( row[ 4 ] );
-			pAT->m_iOrder				= atoi( row[ 5 ] );
-			pAT->m_iExist				= 0;
+			pAT->m_lAttributeID		= ats.m_AttributeID;
+			pAT->m_strAttributeName	= ats.m_AttributeName;
+			pAT->m_strLastValue		= ats.m_LastValue;
+			pAT->m_iFlag			= ats.m_Flag;
+			pAT->m_iOrder			= ats.m_Order;
+			pAT->m_iDataType		= ats.m_DataType;
+			pAT->m_iExist			= 0;
 			pAT->m_strActValue.Empty();
 			m_theArray.Add( pAT );
+			ats.MoveNext();
 		}
+		ret = i;
 	}
-	else
-		AfxMessageBox( "Couldn't execute 'SELECT * FROM AttributeType' on the server !\n" ) ;
-	
-	return( iRet );
+	CATCH( CDaoException, pDE )
+	{
+		AfxMessageBox( "Adatbázis megnyitási hiba!" );
+		pDE->Delete();
+	}
+	END_CATCH
+	return( ret );
 }
-/*
+
+int CAttributeType::LoadVer( LPCSTR lpcDir, DWORD dwSrcID, LPCSTR lpcOrder )
+{
+	CAttributeTypeSet ats;
+	ats.m_strSort = lpcOrder;
+	if( dwSrcID > 0 )
+		ats.m_strDBName.Format( "%s%s\\Ver%05d\\srcdb.mdb", MAIN_DIR, lpcDir, dwSrcID );
+	else
+		ats.m_strDBName.Format( "%ssrcdb.mdb", MAIN_DIR );
+	int ret = 0;
+	TRY
+	{
+		ats.Open();
+      int i = 0;
+		for( ; !ats.IsEOF(); i++ )
+		{
+			ATTRIBUTE_TYPE *pAT		= (ATTRIBUTE_TYPE*) new ATTRIBUTE_TYPE;
+			if( pAT == NULL )
+				break;
+			pAT->m_lAttributeID		= ats.m_AttributeID;
+			pAT->m_strAttributeName	= ats.m_AttributeName;
+			pAT->m_strLastValue		= ats.m_LastValue;
+			pAT->m_iFlag			= ats.m_Flag;
+			pAT->m_iOrder			= ats.m_Order;
+			pAT->m_iDataType		= ats.m_DataType;
+			pAT->m_iExist			= 0;
+			pAT->m_strActValue.Empty();
+			m_theArray.Add( pAT );
+			ats.MoveNext();
+		}
+		ret = i;
+	}
+	CATCH( CDaoException, pDE )
+	{
+		AfxMessageBox( "Adatbázis megnyitási hiba!" );
+		pDE->Delete();
+	}
+	END_CATCH
+	return( ret );
+}
+
+int CAttributeType::LoadFromBin( CBinDBQuery *pBin )
+{
+   DWORD i = 0;
+	for( ; i < pBin->m_dwAttributeCounter; i++ )
+	{
+		ATTRIBUTE_TYPE *pAT		= (ATTRIBUTE_TYPE*) new ATTRIBUTE_TYPE;
+		if( pAT == NULL )
+			break;
+		pAT->m_lAttributeID		= pBin->m_pAttributes[ i ].dwAID;
+		pAT->m_strAttributeName	= (LPCSTR)( pBin->m_pWords + pBin->m_pWordPtr[ pBin->m_pAttributes[ i ].dwNameOffset ] );
+		pAT->m_iDataType		= pBin->m_pAttributes[ i ].dwType;
+		pAT->m_iFlag			= 0;
+		pAT->m_iOrder			= 0;
+		pAT->m_iExist			= 0;
+		pAT->m_strLastValue.Empty();
+		pAT->m_strActValue.Empty();
+		m_theArray.Add( pAT );
+	}
+	return( i );
+}
+
 int CAttributeType::SaveFlag( LPCSTR lpcDir, DWORD dwSrcID )
 {
 	int n = 0;
@@ -71,7 +132,7 @@ int CAttributeType::SaveFlag( LPCSTR lpcDir, DWORD dwSrcID )
 	}
 	return( n );
 }
-*/
+
 int CAttributeType::FindIdxByID( int iAID )
 {
 	for( int i = 0; i < m_theArray.GetSize(); i++ )

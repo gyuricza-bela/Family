@@ -135,7 +135,7 @@ BOOL CBinDBCreator::Do()
 	m_pData[ 0 ].dwValue = 0;
 	m_dwDataOffset = 1;
 
-	for( i = 0; !ss.IsEOF(); i++ )
+	for( int i = 0; !ss.IsEOF(); i++ )
 	{
 		if( IsSelected( ss.m_ID ) )
 		{
@@ -184,7 +184,7 @@ BOOL CBinDBCreator::ProcessDB_1( LPCSTR lpcDBName, int iDB, int iAct, int iMaxDB
 		ats.MoveNext();
 	}
 
-	CPersonSet ps;
+	CPersonSet ps(dbOpenDynaset);
 	ps.m_strDBName = lpcDBName;
 	ps.Open();
 	if( !ps.IsEOF() )
@@ -194,9 +194,6 @@ BOOL CBinDBCreator::ProcessDB_1( LPCSTR lpcDBName, int iDB, int iAct, int iMaxDB
 		int iHI = ps.GetRecordCount();
 		for( int iIdx = 0; !ps.IsEOF(); iIdx++ )
 		{
-			ToNLower( ps.m_LastName );
-			ToNLower( ps.m_FirstName );
-
 			if( !AppendWord( ps.m_LastName ) )
 				return( FALSE );
 			if( !AppendWord( ps.m_FirstName ) )
@@ -261,7 +258,7 @@ BOOL CBinDBCreator::ProcessDB_2( DWORD dwRogzitoID, LPCSTR lpcDBName, int iDB, i
 		ats.MoveNext();
 	}
 
-	CPersonSet ps;
+	CPersonSet ps(dbOpenDynaset);
 	ps.m_strSort = "PID";
 	ps.m_strDBName = lpcDBName;
 	ps.Open();
@@ -273,15 +270,8 @@ BOOL CBinDBCreator::ProcessDB_2( DWORD dwRogzitoID, LPCSTR lpcDBName, int iDB, i
 
 		for( int iIdx = 0; !ps.IsEOF(); iIdx++ )
 		{
-			ToNLower( ps.m_LastName );
-			ToNLower( ps.m_FirstName );
-
 			DWORD dwLN = FindWordB( ps.m_LastName );
 			DWORD dwFN = FindWordB( ps.m_FirstName );
-
-			VerifyNLower( m_pWords + m_pWordPtr[ dwLN ] );
-			VerifyNLower( m_pWords + m_pWordPtr[ dwFN ] );
-
 			if( !AppendPersonIdx( dwRogzitoID, ps.m_PID, dwLN, dwFN ) )
 				return( FALSE );
 			ps.MoveNext();
@@ -605,7 +595,7 @@ BOOL CBinDBCreator::Save_1( void )
 	}
 	fWordPtr2.Read( m_pWordPtr, sizeof(DWORD) * n );
 	m_dwWordCounter = n;
-	fWords2.Read( m_pWords, m_dwWordOffset = dwNewOffset );
+	fWords2.Read( m_pWords, dwNewOffset );
 
 	return( TRUE );
 }
@@ -636,63 +626,5 @@ BOOL CBinDBCreator::Save_2( void )
 	}
 	fData.Write( m_pData, sizeof(BIN_DATA) * m_dwDataOffset );
 
-	CFile fWords;
-	if( !fWords.Open( "Words.bin", CFile::modeCreate | CFile::modeWrite | CFile::typeBinary ) )
-	{
-		AfxMessageBox( "Words.bin (2) fájl megnyitási hiba" );
-		return( FALSE );
-	}
-	fWords.Write( m_pWords, m_dwWordOffset );
-
-
 	return( TRUE );
-}
-
-char CBinDBCreator::ToUpper( char c )
-{
-	if( ( c >= 'A' ) && ( c <= 'Z' ) )
-		return( c );
-	if( ( c >= 'a' ) && ( c <= 'z' ) )
-		return( c - 'a' + 'A' );
-	switch( c )
-	{
-		case 'á': c = 'Á'; break;
-		case 'é': c = 'É'; break;
-		case 'í': c = 'Í'; break;
-		case 'ó': c = 'Ó'; break;
-		case 'ö': c = 'Ö'; break;
-		case 'õ': c = 'Õ'; break;
-		case 'ú': c = 'Ú'; break;
-		case 'ü': c = 'Ü'; break;
-		case 'û': c = 'Û'; break;
-	}
-	return( c );
-}
-
-void CBinDBCreator::ToNLower( CString &str )
-{
-	str.Trim();
-	char puff[ 1024 ];
-	strncpy( puff, str.MakeLower(), sizeof(puff) );
-	puff[ sizeof(puff) - 1 ] = '\0';
-
-	if( strlen( puff ) > 0 )
-	{
-		VerifyNLower( puff );
-		str = puff;
-	}
-}
-
-void CBinDBCreator::VerifyNLower( char *puff )
-{
-	int len = strlen( puff );
-	if( len > 0 )
-	{
-		puff[ 0 ] = ToUpper( puff[ 0 ] );
-
-		for( int i = 0; i + 1 < len; i++ )
-			if( puff[ i ] == ' ' )
-				puff[ i + 1 ] = ToUpper( puff[ i + 1 ] );
-
-	}
 }

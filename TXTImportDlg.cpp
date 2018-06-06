@@ -18,6 +18,8 @@ BEGIN_MESSAGE_MAP(CTXTImportDlg, CDialog)
 	ON_BN_CLICKED(IDC_BUTTON_BIND, OnButtonBind)
 	ON_BN_CLICKED(IDC_BUTTON_DEL, OnButtonDel)
 	//}}AFX_MSG_MAP
+	ON_CBN_SELENDOK(IDC_COMBO1, &CTXTImportDlg::OnCbnSelendokCombo1)
+	ON_CBN_SELENDOK(IDC_COMBO2, &CTXTImportDlg::OnCbnSelendokCombo2)
 END_MESSAGE_MAP()
 
 CTXTImportDlg::CTXTImportDlg( DWORD dwSrcID, CWnd* pParent )
@@ -72,7 +74,7 @@ BOOL CTXTImportDlg::OnInitDialog()
 	m_lcBinds.InsertColumn( 0, "Adatbázis mezõ", LVCFMT_LEFT, dx );
 	m_lcBinds.InsertColumn( 1, "TXT mezõ", LVCFMT_LEFT, r.Width() - dx );
 
-	int n = m_theAttributeType.Load( m_strDir, m_dwSrcID, "[Order]" );
+	int n = m_theAttributeType.Load( m_strDir, 0, "[Order]" );
 	for( int i = 0; i < n; i++ )
 	{
 		ATTRIBUTE_TYPE *pAT = (ATTRIBUTE_TYPE*)m_theAttributeType.m_theArray.GetAt( i );
@@ -84,8 +86,10 @@ BOOL CTXTImportDlg::OnInitDialog()
 	strTXT.Format( "%s%s\\Imp%05d\\srcdb.txt", MAIN_DIR, m_strDir, m_dwSrcID );
 
 	CStdioFile std;
-	if( !std.Open( strTXT, CFile::modeRead ) )
-		MessageBox( strTXT, "Nem sikerült megnyitni!" );
+	if (!std.Open(strTXT, CFile::modeRead))
+	{
+		MessageBox(strTXT, "Nem sikerült megnyitni!" );
+	}
 	else
 	{
 		CString strLine;
@@ -102,9 +106,21 @@ BOOL CTXTImportDlg::OnInitDialog()
 			for( char *p = puff; *p; p += lstrlen( p ) + 1 )
 			{
 				wsprintf( sField, "%02d %s", m_iTXTFieldCount++, p );
-				m_lbTXT.AddString( sField );
+				if (m_iTXTFieldCount > 2)
+				{
+					m_lbTXT.AddString(sField);
+				}
 				m_cbbVezeteknev.AddString( sField );
 				m_cbbKeresztnev.AddString( sField );
+			}
+			if (m_iTXTFieldCount > 0)
+			{
+				m_cbbVezeteknev.SetCurSel(0);
+				m_cbbKeresztnev.SetCurSel(0);
+			}
+			if (m_iTXTFieldCount > 1)
+			{
+				m_cbbKeresztnev.SetCurSel(1);
 			}
 		}
 	}
@@ -199,12 +215,12 @@ void CTXTImportDlg::OnOK()
 		arrATP[ n ] = 0;
 		arrPos[ n ] = NULL;
 	}
-	for( n = 0; n < m_theAttributeType.m_theArray.GetSize(); n++ )
+	for( int n = 0; n < m_theAttributeType.m_theArray.GetSize(); n++ )
 	{
 		ATTRIBUTE_TYPE *pAT = (ATTRIBUTE_TYPE*)m_theAttributeType.m_theArray.GetAt( n );
 		pAT->m_iFlag = 0;
 	}
-	for( n = 0; n < iCount; n++ )
+	for( int n = 0; n < iCount; n++ )
 	{
 		int iAID = m_lcBinds.GetItemData( n );
 		CString str = m_lcBinds.GetItemText( n, 1 );
@@ -249,12 +265,13 @@ void CTXTImportDlg::OnOK()
 	strMDB.Format( "%s%s\\Ver%05d\\srcdb.mdb", MAIN_DIR, m_strDir, m_dwSrcID );
 	if( CFile::GetStatus( strMDB, fs ) )
 	{
-		CString str = "Adatbázis már létezik, ha újra kíván importálni, törölje a " + strMDB + " fájlt!";
-		AfxMessageBox( str );
-		delete []arrAID;
-		delete []arrATP;
-		delete []arrPos;
-		return;
+		// CString str = "Adatbázis már létezik, ha újra kell importálni, törölje a " + strMDB + " fájlt!";
+		// AfxMessageBox( str );
+		//delete []arrAID;
+		//delete []arrATP;
+		//delete []arrPos;
+		// return;
+		DeleteFile(strMDB);
 	}
 	BYTE buffer[ 4096 ];
 	CFile fSRC, fMDB;
@@ -283,7 +300,7 @@ void CTXTImportDlg::OnOK()
 	fMDB.Flush();
 	fMDB.Close();
 	
-	CPersonSet ps;
+	CPersonSet ps(dbOpenDynaset);
 	ps.m_strDBName = strMDB;
 	ps.Open();
 	while( !ps.IsEOF() )
@@ -315,7 +332,7 @@ void CTXTImportDlg::OnOK()
 					puff[ c ] = '\0';
 					iCount++;
 				}
-			n = 0;
+			int n = 0;
 			strVezeteknev.Empty();
 			strKeresztnev.Empty();
 			for( char *p = puff; --iCount >= 0; p += lstrlen( p ) + 1 )
@@ -331,7 +348,7 @@ void CTXTImportDlg::OnOK()
 				n++;
 			}
 			if( !strVezeteknev.IsEmpty() )
-				if( !strKeresztnev.IsEmpty() )
+				// if( !strKeresztnev.IsEmpty() )
 				{
 					if( strVezeteknev.GetLength() > 30 )
 						strVezeteknev = strVezeteknev.Left( 30 );
@@ -425,5 +442,77 @@ void CTXTImportDlg::FormatValueDType( DWORD dwATP, LPCSTR lpcSrc, LPSTR lpcDesc,
 	if( dwATP == 6 )
 	{
 		;
+	}
+}
+
+void CTXTImportDlg::OnCbnSelendokCombo1()
+{
+	CString strTxtField;
+	m_cbbVezeteknev.GetLBText(m_cbbVezeteknev.GetCurSel(), strTxtField);
+	DeleteNameAttrib(strTxtField);
+}
+
+void CTXTImportDlg::OnCbnSelendokCombo2()
+{
+	CString strTxtField;
+	m_cbbKeresztnev.GetLBText(m_cbbKeresztnev.GetCurSel(), strTxtField);
+	DeleteNameAttrib(strTxtField);
+}
+
+void CTXTImportDlg::DeleteNameAttrib(CString strTxtField)
+{
+	for (int i1 = 0; i1 < m_lbTXT.GetCount(); ++i1)
+	{
+		CString strItem;
+		m_lbTXT.GetText(i1, strItem);
+		if (strItem == strTxtField)
+		{
+			m_lbTXT.DeleteString(i1);
+			break;
+		}
+	}
+	for (int i2 = 0; i2 < m_lcBinds.GetItemCount(); ++i2)
+	{
+		CString strItem = m_lcBinds.GetItemText(i2, 1);
+		if (strItem == strTxtField)
+		{
+			m_lcBinds.DeleteItem(i2);
+			break;
+		}
+	}
+	int arrCheckList[128];
+	::ZeroMemory(arrCheckList, sizeof(arrCheckList));
+	m_cbbVezeteknev.GetLBText(m_cbbVezeteknev.GetCurSel(), strTxtField);
+	arrCheckList[_ttoi(strTxtField)] = 1;
+	m_cbbKeresztnev.GetLBText(m_cbbKeresztnev.GetCurSel(), strTxtField);
+	arrCheckList[_ttoi(strTxtField)] = 1;
+	CString strItem;
+	for (int i = 0; i < m_lbTXT.GetCount(); ++i)
+	{
+		m_lbTXT.GetText(i, strItem);
+		arrCheckList[_ttoi(strItem)] = 2;
+	}
+	for (int i = 0; i < m_lcBinds.GetItemCount(); ++i)
+	{
+		strItem = m_lcBinds.GetItemText(i, 1);
+		arrCheckList[_ttoi(strItem)] = 3;
+	}
+	for (int i = 0; i < m_iTXTFieldCount; ++i)
+	{
+		if (arrCheckList[i] == 0)
+		{
+			m_cbbVezeteknev.GetLBText(i, strTxtField);
+			int idx = 0;
+			while( idx < m_lbTXT.GetCount() )
+			{
+				m_lbTXT.GetText(idx, strItem);
+				if (strItem >= strTxtField)
+				{
+					break;
+				}
+				++idx;
+			}
+			m_lbTXT.InsertString(idx, strTxtField);
+		}
 	}
 }

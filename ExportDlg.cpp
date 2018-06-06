@@ -104,9 +104,13 @@ void CExportDlg::OnButtonMod()
 		return;
 	}
 	COptionsDlg sd( m_theList.GetItemData( iSel ) );
-	if( sd.DoModal() == IDOK )
-		m_theList.SetItemText( iSel, 3, sd.m_strSrcDB );
+   if( sd.DoModal() == IDOK )
+   {
+      m_theList.SetItemText( iSel, 2, sd.m_strDirName );
+      m_theList.SetItemText( iSel, 3, sd.m_strSrcDB );
+   }
 }
+		
 
 void CExportDlg::OnButtonDel() 
 {
@@ -123,26 +127,59 @@ void CExportDlg::OnButtonDel()
 	CFileStatus r;
 	if( CFile::GetStatus( strDel, r ) )
 	{
-		AfxMessageBox
-		(
-			"Az azonosítóhoz még tartozik adatbázis.\n"
-			"Elõször az adatbázist kell fizikailag törölni,\n"
-			"és csak utána szüntethetõ meg a rá vonatkozó bejegyzés!"
-		);
-		return;
-	}
-	if( AfxMessageBox( "Valóban törölni kívánja a kiválasztott bejegyzést?", MB_YESNO ) != IDYES )
-		return;
-	CSrcDBSet ss;
-	ss.m_strFilter.Format( "([ID]=%d)", iID );
-	ss.Open();
-	if( !ss.IsEOF() )
-	{
-		ss.Delete();
-		ss.MoveNext();
-		m_theList.DeleteItem( iSel );
-	}
+		if (AfxMessageBox(
+			"Az azonosítóhoz még tartozik adatbázis.\n\nValóban töröljek mindnet?", MB_YESNO ) != IDYES)
+		{
+			return;
+		}
+		strDel.Format("%s%s\\Exp%05d\\SrcDB.mdb", (LPCSTR)MAIN_DIR, strDir, iID);
+		::DeleteFile(strDel);
+		strDel.Format("%s%s\\Exp%05d", (LPCSTR)MAIN_DIR, strDir, iID);
+		::RemoveDirectory(strDel);
 
+		strDel.Format("%s%s\\Imp%05d\\SrcDB.mdb", (LPCSTR)MAIN_DIR, strDir, iID);
+		::DeleteFile(strDel);
+		strDel.Format("%s%s\\Imp%05d", (LPCSTR)MAIN_DIR, strDir, iID);
+		::RemoveDirectory(strDel);
+
+		strDel.Format("%s%s\\Ver%05d\\SrcDB.mdb", (LPCSTR)MAIN_DIR, strDir, iID);
+		::DeleteFile(strDel);
+		strDel.Format("%s%s\\Ver%05d", (LPCSTR)MAIN_DIR, strDir, iID);
+		::RemoveDirectory(strDel);
+	}
+	else if( AfxMessageBox( "Valóban töröljem a kiválasztott bejegyzést?", MB_YESNO ) != IDYES )
+		return;
+
+   // to release the database
+   {
+      CSrcDBSet ss;
+      ss.m_strFilter.Format( "([ID]=%d)", iID );
+      ss.Open();
+      if( !ss.IsEOF() )
+      {
+         ss.Delete();
+         ss.MoveNext();
+         m_theList.DeleteItem( iSel );
+      }
+   }
+
+   int iMaxID = 0;
+   for( int i = 0; i < m_theList.GetItemCount(); ++i )
+   {
+      int id = m_theList.GetItemData( i );
+      if( id > iMaxID )
+      {
+         iMaxID = id;
+      }
+   }
+
+   CDaoDatabase db;
+   CString strNew = WORKDB_NAME;
+   strNew.Replace(_T(".mdb"), _T("_2.mdb"));
+   db.m_pWorkspace->CompactDatabase(WORKDB_NAME, strNew);
+   DeleteFile(WORKDB_NAME + _T(".bak"));
+   MoveFile(WORKDB_NAME, WORKDB_NAME + _T(".bak"));
+   MoveFile(strNew, WORKDB_NAME);
 }
 
 BOOL CExportDlg::CopyMDB( LPCSTR lpcDir, LPCSTR lpcSrc, int iID )

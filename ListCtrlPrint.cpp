@@ -153,7 +153,7 @@ void CListCtrlPrint::OnBeginPrinting(CDC * pDC, CPrintInfo * pInfo)
 	SubtractMargin(pDC, rcPrint);
 	double db = rcPrint.Width();
 	db /= (double) pDx[iNumCol];
-	for (t = 0; t <= iNumCol; t++) pDx[t] = (int)double(pDx[t] * db);
+	for (int t = 0; t <= iNumCol; t++) pDx[t] = (int)double(pDx[t] * db);
 	ASSERT(pList);
 
 	PrintListHead(pDC, rcPrint, true);

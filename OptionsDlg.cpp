@@ -41,6 +41,7 @@ COptionsDlg::COptionsDlg( DWORD dwSrcID, CWnd* pParent )
 		{
 			m_strSrcDB = ss.m_Name;
 			m_strDir = ss.m_Directory;
+         m_strDirName = m_strDir;
 			m_bCanOpen = TRUE;
 		}
 	}
@@ -58,8 +59,9 @@ void COptionsDlg::DoDataExchange( CDataExchange* pDX )
 	//{{AFX_DATA_MAP(COptionsDlg)
 	DDX_Control(pDX, IDC_LIST_SELECTED, m_lcSelected);
 	DDX_Control(pDX, IDC_LIST_ALL, m_lcAll);
-	DDX_Text(pDX, IDC_EDIT1, m_strSrcDB);
-	//}}AFX_DATA_MAP
+   DDX_Text( pDX, IDC_EDIT1, m_strSrcDB );
+   DDX_Text( pDX, IDC_EDIT_DIR, m_strDirName );
+   //}}AFX_DATA_MAP
 }
 
 BOOL COptionsDlg::OnInitDialog() 
@@ -170,6 +172,7 @@ void COptionsDlg::OnOK()
 	{
 		ss.Edit();
 		ss.m_Name = m_strSrcDB;
+      ss.m_Directory = m_strDirName;
 		ss.Update();
 	}
 	
@@ -306,3 +309,4 @@ void COptionsDlg::OnDblclkListSelected()
 {
 	OnButtonDelAttr();
 }
+

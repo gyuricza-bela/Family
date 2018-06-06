@@ -21,6 +21,7 @@ public:
 
 protected:
 	void FormatValueDType( DWORD dwATP, LPCSTR lpcSrc, LPSTR lpsDesc, int iLen = 50 );
+	void DeleteNameAttrib(CString strTxtField);
 
 	CAttributeType m_theAttributeType;
 	DWORD m_dwSrcID;
@@ -37,6 +38,8 @@ protected:
 	virtual BOOL OnInitDialog();
 	afx_msg void OnButtonBind();
 	afx_msg void OnButtonDel();
+	afx_msg void OnCbnSelendokCombo1();
+	afx_msg void OnCbnSelendokCombo2();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 };

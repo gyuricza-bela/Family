@@ -9,7 +9,7 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-// #include "BinDBQuery.h"
+#include "BinDBQuery.h"
 
 typedef struct tagATTRIBUTE_TYPE
 {
@@ -31,8 +31,10 @@ public:
 	virtual ~CAttributeType(){ Free(); }
 
 	void Free( void );
-	int LoadSQL( void );
-	//int SaveFlag( LPCSTR lpcDir, DWORD dwSrcID );
+	int Load( LPCSTR lpcDir, DWORD dwSrcID, LPCSTR lpcOrder );
+	int LoadVer( LPCSTR lpcDir, DWORD dwSrcID, LPCSTR lpcOrder );
+	int LoadFromBin( CBinDBQuery *pBin );
+	int SaveFlag( LPCSTR lpcDir, DWORD dwSrcID );
 	int FindIdxByID( int iAID );
 	ATTRIBUTE_TYPE *FindAttributeType( long lAttributeID );
 //	int GetDataType( long lAttributeID, int &iRemember );

@@ -17,9 +17,9 @@ public:
 	COptionsDlg( DWORD dwSrcID, CWnd* pParent = NULL );
 
 	CAttributeType m_theAttributeType;
-	DWORD m_dwSrcID;
+   CString m_strDir;
+   DWORD m_dwSrcID;
 	BOOL  m_bCanOpen;
-	CString m_strDir;
 
 // Dialog Data
 	//{{AFX_DATA(COptionsDlg)
@@ -27,7 +27,8 @@ public:
 	CCheckListBox	m_lcSelected;
 	CListBox	m_lcAll;
 	CString	m_strSrcDB;
-	//}}AFX_DATA
+   CString m_strDirName;
+   //}}AFX_DATA
 
 
 // Overrides

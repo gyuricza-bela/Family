@@ -60,10 +60,6 @@ public:
 	BOOL Save_2( void );
 
 protected:
-	char ToUpper( char c );
-	void ToNLower( CString &str );
-	void VerifyNLower( char *p );
-
 	CDWordArray		   *m_pIDS;
 
 	BIN_ATTRIBUTETYPE  *m_pAttributes;

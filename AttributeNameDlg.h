@@ -21,6 +21,7 @@ public:
 	enum { IDD = IDD_ATTRIBUTE_ADD };
 	CString	m_stcMsg;
 	CString	m_strName;
+	int		m_iOrder;
 	//}}AFX_DATA
 
 

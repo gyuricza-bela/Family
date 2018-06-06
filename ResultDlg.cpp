@@ -1,10 +1,11 @@
 #include "stdafx.h"
+#include <afxadv.h>	// CSharedFile
 #include "workdb.h"
 #include "ResultDlg.h"
 #include "ResultOptionDlg.h"
-#include "SQLQueryDlg.h"
+#include "QueryDlg.h"
+#include "BinDBQuery.h"
 #include "ListCtrlPrint.h"
-#include "MySQLRecordSet.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -25,17 +26,14 @@ END_MESSAGE_MAP()
 
 CDWordArray CResultDlg::sm_theArray;
 
-CResultDlg::CResultDlg( LPCTSTR lpcSQL, CWnd* pParent )
-: CDialog( CResultDlg::IDD, pParent )
+CResultDlg::CResultDlg( CWnd* pParent )
+: CDialog(CResultDlg::IDD, pParent)
 {
-	m_strSQL = lpcSQL;
+	//{{AFX_DATA_INIT(CResultDlg)
+	//}}AFX_DATA_INIT
 }
 
-CResultDlg::~CResultDlg()
-{
-}
-
-void CResultDlg::DoDataExchange( CDataExchange* pDX )
+void CResultDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialog::DoDataExchange(pDX);
 	//{{AFX_DATA_MAP(CResultDlg)
@@ -66,8 +64,8 @@ BOOL CResultDlg::OnInitDialog()
 
 	m_lcPerson.SetExtendedStyle( LVS_EX_FULLROWSELECT );
 
-	m_theAT.LoadSQL();
-
+//	m_theAT.Load( MAIN_DIR, 0, "" );
+	m_theAT.LoadFromBin( &(((CQueryDlg*)GetParent())->m_binDB) );
 	for( int i = 0; i < m_theAT.m_theArray.GetSize(); i++ )
 	{
 		ATTRIBUTE_TYPE *pAT = (ATTRIBUTE_TYPE*)m_theAT.m_theArray.GetAt( i );
@@ -81,7 +79,7 @@ BOOL CResultDlg::OnInitDialog()
 	}
 
 	FillList();
-
+	
 	return( TRUE );
 }
 
@@ -103,7 +101,7 @@ int CResultDlg::FillList( void )
 
 	CPtrArray arrAT;
 	int n = 2;
-	for( i = 0; i < m_theAT.m_theArray.GetSize(); i++ )
+	for( int i = 0; i < m_theAT.m_theArray.GetSize(); i++ )
 	{
 		ATTRIBUTE_TYPE *pAT = (ATTRIBUTE_TYPE*)m_theAT.m_theArray.GetAt( i );
 		if( pAT->m_iFlag > 0 )
@@ -113,60 +111,32 @@ int CResultDlg::FillList( void )
 		}
 	}
 
-	DWORD dwStartTick = ::GetTickCount();
-
-   CMySQLRecordSet rs;
-   MYSQL_RES *res = rs.ExecuteQuery( m_strSQL );
-	
-   if( res != NULL ) 
-	{
-	   MYSQL_ROW row;
-
-		DWORD dwPrevID = 0;
-		int	iAct		= 0;
-
-		for( int i = 0; row = mysql_fetch_row( res ); i++ )
-		{
-			DWORD dwID = atoi( row[ 0 ] ) * 10000000 + atoi( row[ 1 ] );
-
-			if( dwPrevID != dwID )
+	int iResult = 0;
+	CBinDBQuery *pBin = &(((CQueryDlg*)GetParent())->m_binDB);
+	for( int i = 0; i < (int)pBin->m_dwPersonIdxCounter; i++ )
+		if( pBin->Verify( i ) )
+			if( ++iResult <= 4000 )
 			{
-				iAct = m_lcPerson.InsertItem( i, row[ 2 ] );
-				m_lcPerson.SetItemText( iAct, 1, row[ 3 ] );
-			
-				m_lcPerson.SetItemData( iAct, dwID );
+				int iAct = m_lcPerson.InsertItem( i, pBin->GetPersonLNameByIdx( i ) );
+				m_lcPerson.SetItemText( iAct, 1, pBin->GetPersonFNameByIdx( i ) );
+				m_lcPerson.SetItemData( iAct, (DWORD)i );
 
-				dwPrevID = dwID;
-			}
-
-			int n = 1;
-			DWORD dwAttributeID = atoi( row[ 4 ] );
-			for( i = 0; i < m_theAT.m_theArray.GetSize(); i++ )
-			{
-				ATTRIBUTE_TYPE *pAT = (ATTRIBUTE_TYPE*)m_theAT.m_theArray.GetAt( i );
-				if( pAT->m_iFlag > 0 )
+				BIN_PERSONIDX *pPI = &pBin->m_pPersonIdx[ i ];
+				for( int j = pPI->dwDataOffset; j < (int)pPI[ 1 ].dwDataOffset; j++ )
 				{
-					n++;
-					if( pAT->m_lAttributeID == (long)dwAttributeID )
+					int iPos = FindCol( &arrAT, pBin->m_pData[ j ].dwAID );
+					if( iPos > 1 )
 					{
-						m_lcPerson.SetItemText( iAct, n, row[ 5 ] );
+						CString str = pBin->m_pWords + pBin->m_pWordPtr[ pBin->m_pData[ j ].dwValue ];
+						m_lcPerson.SetItemText( iAct, iPos, str );
 					}
 				}
 			}
-		}
-	}
-
-	double dblETime = ((double)( ::GetTickCount() - dwStartTick )) / 1000.0;
 
 	CString strResult;
-	strResult.Format( "Listába betöltött elemek száma: %d, felhasznált idõ: %.3lf", m_lcPerson.GetItemCount(), dblETime );
+	strResult.Format( "Találatok száma: %d  Listába betöltve: %d", iResult, m_lcPerson.GetItemCount() );
 	SetDlgItemText( IDC_STATIC_REPORT, strResult );
 	return( n );
-}
-
-int CResultDlg::FillRow( int iIdx, MYSQL_ROW row )
-{
-	return( 0 );
 }
 
 int CResultDlg::FillData( void )
@@ -178,6 +148,9 @@ int CResultDlg::FillData( void )
 		return( 0 );
 
 	int iIdx = m_lcPerson.GetItemData( iSel );
+	CBinDBQuery *pBin = &(((CQueryDlg*)GetParent())->m_binDB);
+	if( ( iIdx < 0 ) || ( iIdx >= (int)pBin->m_dwPersonIdxCounter ) )
+		return( 0 );
 
 	if( m_lcAttribs.GetHeaderCtrl()->GetItemCount() == 0 )
 	{
@@ -198,51 +171,30 @@ int CResultDlg::FillData( void )
 			}
 		}
 	}
-	else
+	for( int i = 0; i < m_lcAttribs.GetItemCount(); i++ )
 	{
-		for( int i = m_lcAttribs.GetItemCount(); --i >= 0; )
-			m_lcAttribs.SetItemText( i, 1, "" );
+		CString str = FindValue( iIdx, m_lcAttribs.GetItemData( i ) );
+		m_lcAttribs.SetItemText( i, 1, str );
 	}
 
-	DWORD dwDBID = iIdx / 10000000;
-	DWORD dwPID  = iIdx % 10000000;
-	CString strSQL;
-	strSQL.Format
-	(
-		_T("SELECT AttributeID, AValue FROM Attributes WHERE DBID = %d AND PID = %d ORDER BY AttributeID"),
-		dwDBID, dwPID
-	);
-
-   CMySQLRecordSet rs;
-   MYSQL_RES *res = rs.ExecuteQuery( strSQL );
-	if( res != NULL ) 
-	{
-	   MYSQL_ROW row;
-
-		DWORD dwPrevID = 0;
-		int	iAct		= 0;
-
-		for( int i = 0; row = mysql_fetch_row( res ); i++ )
-		{
-			int iIdx = FindAttributeIdx( atoi( row[ 0 ] ) );
-			if( iIdx >= 0 )
-			{
-				m_lcAttribs.SetItemText( iIdx, 1, row[ 1 ] );
-			}
-		}
-	}
 	return( n );
 }
 
-int CResultDlg::FindAttributeIdx( DWORD dwAID )
+CString CResultDlg::FindValue( DWORD dwIdx, DWORD dwAID )
 {
 	CString str = "";
 
-	for( int i = m_lcAttribs.GetItemCount(); --i >= 0; )
-		if( dwAID ==  m_lcAttribs.GetItemData( i ) )
-			return( i );
+	CBinDBQuery *pBin = &(((CQueryDlg*)GetParent())->m_binDB);
+	BIN_PERSONIDX *pPI = &pBin->m_pPersonIdx[ dwIdx ];
+
+	for( int j = pPI->dwDataOffset; j < (int)pPI[ 1 ].dwDataOffset; j++ )
+		if( pBin->m_pData[ j ].dwAID == dwAID )
+		{
+			str = pBin->m_pWords + pBin->m_pWordPtr[ pBin->m_pData[ j ].dwValue ];
+			break;
+		}
 	
-	return( -1 );
+	return( str );
 }
 
 int CResultDlg::FindCol( CPtrArray *pA, DWORD dwAID )
@@ -281,7 +233,7 @@ void CResultDlg::OnButtonSave()
 			f.WriteString( sBuffer );
 		}
 		f.WriteString( "\n" );
-		for( i = 0; i < m_lcPerson.GetItemCount(); i++ )
+		for( int i = 0; i < m_lcPerson.GetItemCount(); i++ )
 		{
 			for( int j = 0; j < nColumnCount; j++ )
 			{
@@ -317,7 +269,7 @@ void CResultDlg::OnButtonClipboard()
 		f.Write( sBuffer, lstrlen( sBuffer ) );
 	}
 	f.Write( "\n", 1 );
-	for( i = 0; i < m_lcPerson.GetItemCount(); i++ )
+	for( int i = 0; i < m_lcPerson.GetItemCount(); i++ )
 	{
 		for( int j = 0; j < nColumnCount; j++ )
 		{
@@ -363,6 +315,8 @@ char *CResultDlg::sm_pStr = NULL;
 
 int CALLBACK CResultDlg::CompareRows( LPARAM lParam1, LPARAM lParam2, LPARAM lParamSort )
 {
+   // lParamSort contains a pointer to the list view control.
+   // The lParam of an item is just its index.
    CListCtrl* pListCtrl = (CListCtrl*) lParamSort;
 
    return( strcmp( sm_pStr + 32 * lParam1, sm_pStr + 32 * lParam2 ) );
@@ -375,7 +329,7 @@ void CResultDlg::OnColumnclickListPerson(NMHDR* pNMHDR, LRESULT* pResult)
 	int iNumRow = m_lcPerson.GetItemCount();
 	if( iNumRow > 0 )
 	{
-/*		CBinDBQuery *pBin = &(((CQueryDlg*)GetParent())->m_binDB);
+		CBinDBQuery *pBin = &(((CQueryDlg*)GetParent())->m_binDB);
 		sm_iCol = pNMListView->iSubItem;
 		sm_pStr = new char[ ( pBin->m_dwPersonIdxCounter + 1 ) * 32 ];
 		if( sm_pStr )
@@ -385,34 +339,11 @@ void CResultDlg::OnColumnclickListPerson(NMHDR* pNMHDR, LRESULT* pResult)
 				int iData = m_lcPerson.GetItemData( i );
 				m_lcPerson.GetItemText( i, sm_iCol, sm_pStr + 32 * iData, 31 );
 				sm_pStr[ 32 * iData + 31 ] = '\0';
-				for( int i = 0; i < 31; i++ )
-					switch( sm_pStr[ 32 * iData + i ] )
-					{
-						case 'á': sm_pStr[ 32 * iData + i ] = 'a'; break;
-						case 'é': sm_pStr[ 32 * iData + i ] = 'e'; break;
-						case 'í': sm_pStr[ 32 * iData + i ] = 'i'; break;
-						case 'ó': sm_pStr[ 32 * iData + i ] = 'o'; break;
-						case 'ö': sm_pStr[ 32 * iData + i ] = 'o'; break;
-						case 'õ': sm_pStr[ 32 * iData + i ] = 'o'; break;
-						case 'ú': sm_pStr[ 32 * iData + i ] = 'u'; break;
-						case 'ü': sm_pStr[ 32 * iData + i ] = 'u'; break;
-						case 'û': sm_pStr[ 32 * iData + i ] = 'u'; break;
-						case 'Á': sm_pStr[ 32 * iData + i ] = 'A'; break;
-						case 'É': sm_pStr[ 32 * iData + i ] = 'E'; break;
-						case 'Í': sm_pStr[ 32 * iData + i ] = 'I'; break;
-						case 'Ó': sm_pStr[ 32 * iData + i ] = 'O'; break;
-						case 'Ö': sm_pStr[ 32 * iData + i ] = 'O'; break;
-						case 'Õ': sm_pStr[ 32 * iData + i ] = 'O'; break;
-						case 'Ú': sm_pStr[ 32 * iData + i ] = 'U'; break;
-						case 'Ü': sm_pStr[ 32 * iData + i ] = 'U'; break;
-						case 'Û': sm_pStr[ 32 * iData + i ] = 'U'; break;
-					}
 			}
 			m_lcPerson.SortItems( CompareRows, (LPARAM)&m_lcPerson );
 			delete [] sm_pStr;
-		}*/
+		}
 	}
 	
 	*pResult = 0;
 }
-

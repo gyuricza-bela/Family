@@ -56,10 +56,13 @@ BOOL CStaffDlg::OnInitDialog()
 
 		CAttributeTypeSet ats;
 		ats.m_strFilter.Format( "([DataType]=%d)", dts.m_DataTypeID );
+		ats.m_strSort = _T("[Order]");
 		ats.Open();
 		for( int j = 0; !ats.IsEOF(); j++ )
 		{
-			HTREEITEM hti2 = m_theTree.InsertItem( ats.m_AttributeName, hti );
+			CString strAttribute;
+			strAttribute.Format(_T("%s (%d)"), (LPCTSTR)ats.m_AttributeName, ats.m_Order);
+			HTREEITEM hti2 = m_theTree.InsertItem( strAttribute, hti );
 			dw = LEVEL2 + (DWORD)ats.m_AttributeID;
 			m_theTree.SetItemData( hti2, dw );
 			if( ( dts.m_DataTypeID == 4 ) || ( dts.m_DataTypeID == 5 ) )
@@ -122,7 +125,7 @@ void CStaffDlg::OnButtonAdd()
 					ats.m_AttributeName = and.m_strName;
 					ats.m_DataType      = pid;
 					ats.m_Flag			= 0;
-					ats.m_Order			= 999;
+					ats.m_Order			= and.m_iOrder;
 					ats.m_LastValue.Empty();
 					ats.Update();
 					ats.MoveLast();
@@ -204,7 +207,10 @@ void CStaffDlg::OnButtonMod()
 		{
 			CAttributeNameDlg and;
 			and.m_stcMsg = str;
-			and.m_strName = m_theTree.GetItemText( hti );
+			str = m_theTree.GetItemText(hti);
+			int iPos = str.ReverseFind(_T(' '));
+			and.m_strName = str.Left(iPos);
+			and.m_iOrder = _ttoi(str.Mid(iPos + 2));
 			if( and.DoModal() == IDOK )
 				if( !and.m_strName.IsEmpty() )
 				{
@@ -215,8 +221,10 @@ void CStaffDlg::OnButtonMod()
 					{
 						ats.Edit();
 						ats.m_AttributeName = and.m_strName;
+						ats.m_Order = and.m_iOrder;
 						ats.Update();
-						m_theTree.SetItemText( hti, ats.m_AttributeName );
+						str.Format(_T("%s (%d)"), (LPCTSTR)ats.m_AttributeName, ats.m_Order);
+						m_theTree.SetItemText( hti, str );
 					}
 				}
 		}

@@ -5,7 +5,7 @@
 #include "stdafx.h"
 #include "workdb.h"
 #include "Attribute.h"
-//#include "AttributesSet.h"
+#include "AttributesSet.h"
 
 #ifdef _DEBUG
 #undef THIS_FILE

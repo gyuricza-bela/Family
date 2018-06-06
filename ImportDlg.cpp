@@ -45,7 +45,7 @@ BOOL CImportDlg::OnInitDialog()
 	m_theList.InsertColumn( 2, "Stop",			LVCFMT_RIGHT, 2 * dx );
 	m_theList.InsertColumn( 3, "Ellenõrzés",	LVCFMT_RIGHT, 2 * dx );
 	m_theList.InsertColumn( 4, "Rögzitõ",		LVCFMT_LEFT, 3 * dx );
-	m_theList.InsertColumn( 5, "Megnevezés",	LVCFMT_LEFT,  r.Width() - GetSystemMetrics( SM_CXVSCROLL ) - 6 * dx );
+	m_theList.InsertColumn( 5, "Megnevezés",	LVCFMT_LEFT,  r.Width() - GetSystemMetrics( SM_CXVSCROLL ) - 10 * dx );
 	m_theList.SetExtendedStyle( LVS_EX_FULLROWSELECT );
 
 	CSrcDBSet ss;
@@ -140,16 +140,50 @@ void CImportDlg::OnButtonTxt()
 			CString strTXT;
 			strTXT.Format( "%s%s\\Imp%05d\\srcdb.txt", MAIN_DIR, ss.m_Directory, dwSrcID );
 			CFileStatus r;
-			if( CFile::GetStatus( strTXT, r ) )
+			if( !CFile::GetStatus( strTXT, r ) )
+			{
+				if (MessageBox(strTXT + "\n\nLétrehozzuk most az import fájlt?", "Nem sikerült megnyitni!", MB_YESNO) != IDYES)
+					return;
+
+				if (MessageBox("Másold a az Excel állományból az adatokat a vágólapra\nés kattints a OK gombra ha ez meg van!", "Importálás elõkészítése", MB_OKCANCEL) != IDOK)
+					return;
+
+				CFile stdNew;
+				if (!stdNew.Open(strTXT, CFile::modeCreate | CFile::modeWrite))
+				{
+					MessageBox("Valami hiba van, nem sikerült a fájlt megnyitni!");
+					return;
+				}
+				if (!OpenClipboard())
+					return;
+
+				HANDLE hData = GetClipboardData(CF_UNICODETEXT);
+				if (hData == NULL)
+				{
+					hData = GetClipboardData(CF_TEXT);
+					if (hData == NULL)
+					{
+						CloseClipboard();
+						return;
+					}
+				}
+				if (LPCWSTR lpwText = (LPCWSTR)::GlobalLock(hData))
+				{
+					int len = wcslen(lpwText);
+					char* ansi = new char[len * 2 + 1];
+					int aLen = WideCharToMultiByte(0, 0, lpwText, len, ansi, len * 2 + 1, nullptr, nullptr);
+					stdNew.Write((const void*)ansi, aLen);
+				}
+				else
+					return;
+
+				::GlobalUnlock(hData);
+				CloseClipboard();
+
+			}
 			{
 				CTXTImportDlg tid( dwSrcID );
 				tid.DoModal();
-			}
-			else
-			{
-				CString str;
-				str.Format( "A fájl nem létezik (%s)!", strTXT );
-				AfxMessageBox( str );
 			}
 		}
 	}

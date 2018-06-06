@@ -8,7 +8,7 @@
 class CPersonSet : public CDaoRecordset
 {
 public:
-	CPersonSet(CDaoDatabase* pDatabase = NULL);
+	CPersonSet(RecordsetTypeEnum eDB, CDaoDatabase* pDatabase = NULL);
 	DECLARE_DYNAMIC(CPersonSet)
 
 	CString m_strDBName;

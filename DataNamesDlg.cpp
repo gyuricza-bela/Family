@@ -25,7 +25,7 @@ CDataNamesDlg::CDataNamesDlg( DWORD dwPID, CWnd* pParent )
 	if( ( m_dwPID = dwPID ) > 0 )
 	{
 		CVerifyDlg *pd = (CVerifyDlg*)pParent;
-		CPersonSet ps;
+		CPersonSet ps(dbOpenDynaset);
 		ps.m_strDBName.Format( "%s%s\\Ver%05d\\srcdb.mdb", MAIN_DIR, pd->m_strDir, pd->m_dwSrcID );
 		ps.m_strFilter.Format( "([PID]=%d)", m_dwPID );
 		ps.Open();
@@ -51,7 +51,7 @@ void CDataNamesDlg::OnOK()
 	UpdateData();
 	CVerifyDlg *pd = (CVerifyDlg*)GetParent();
 
-	CPersonSet ps;
+	CPersonSet ps(dbOpenDynaset);
 	ps.m_strDBName.Format( "%s%s\\Ver%05d\\srcdb.mdb", MAIN_DIR, pd->m_strDir, pd->m_dwSrcID );
 
 	if( m_dwPID == 0 )

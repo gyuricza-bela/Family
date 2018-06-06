@@ -15,7 +15,6 @@ public:
     ~CBCProgressDlg();
 
     BOOL Create(CWnd *pParent=NULL);
-    void PumpMessages();
 
     // Checking for Cancel button
     BOOL CheckCancelButton();
@@ -58,6 +57,7 @@ protected:
     virtual void OnCancel();
     virtual void OnOK() {}; 
     void UpdatePercent(int nCurrent);
+    void PumpMessages();
 
     // Generated message map functions
     //{{AFX_MSG(CBCProgressDlg)

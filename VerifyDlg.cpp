@@ -86,7 +86,8 @@ BOOL CVerifyDlg::OnInitDialog()
 	m_lcPerson.InsertColumn( 0, "Vezetéknév", LVCFMT_LEFT, dx );
 	m_lcPerson.InsertColumn( 1, "Keresztnév", LVCFMT_LEFT, r.Width() - GetSystemMetrics( SM_CXVSCROLL ) - dx );
 
-	CPersonSet ps;
+	m_lcPerson.SetRedraw(FALSE);
+	CPersonSet ps(dbOpenForwardOnly);
 	ps.m_strDBName.Format( "%s%s\\Ver%05d\\srcdb.mdb", MAIN_DIR, m_strDir, m_dwSrcID );
 	ps.Open();
 	for( int i = 0; !ps.IsEOF(); i++ )
@@ -96,16 +97,18 @@ BOOL CVerifyDlg::OnInitDialog()
 		m_lcPerson.SetItemData( i, ps.m_PID );
 		ps.MoveNext();
 	}
+	ps.GetRecordCount();
 	m_lcPerson.SetExtendedStyle( m_lcPerson.GetExtendedStyle() | LVS_EX_FULLROWSELECT	) ;
 	m_lcPerson.SetItemState( 0, LVNI_SELECTED, LVNI_SELECTED );
-	
+	m_lcPerson.SetRedraw(TRUE);
+
 	m_lcValues.GetClientRect( &r );
 	dx = ( r.Width() - GetSystemMetrics( SM_CXVSCROLL ) ) / 4;
 	m_lcValues.InsertColumn( 0, "Adattípus", LVCFMT_LEFT, dx );
 	m_lcValues.InsertColumn( 1, "Adat", LVCFMT_LEFT, r.Width() - GetSystemMetrics( SM_CXVSCROLL ) - dx );
 	m_lcValues.SetExtendedStyle( m_lcValues.GetExtendedStyle() | LVS_EX_FULLROWSELECT	) ;
 
-	m_theAttributeTypes.LoadVer( m_strDir, m_dwSrcID, "" );
+	m_theAttributeTypes.LoadVer( m_strDir, 0, "" );
 
 	if( m_bAllDataList == TRUE )
 		((CButton*)GetDlgItem( IDC_RADIO1 ))->SetCheck( TRUE );
@@ -134,7 +137,7 @@ void CVerifyDlg::FillValues( DWORD dwAID )
 	else
 		as.m_strDBName.Format( "%ssrcdb.mdb", MAIN_DIR );
 	as.Open();
-	for( i = 0; !as.IsEOF(); i++ )
+	for( int i = 0; !as.IsEOF(); i++ )
 	{
 		ATTRIBUTE_TYPE *pAT = m_theAttributeTypes.FindAttributeType( as.m_AttributeID );
 		if( pAT != NULL )
@@ -142,7 +145,7 @@ void CVerifyDlg::FillValues( DWORD dwAID )
 		as.MoveNext();
 	}
 
-	for( i = 0; i < m_theAttributeTypes.m_theArray.GetSize(); i++ )
+	for( int i = 0; i < m_theAttributeTypes.m_theArray.GetSize(); i++ )
 	{
 		ATTRIBUTE_TYPE *pAT = (ATTRIBUTE_TYPE*)m_theAttributeTypes.m_theArray.GetAt( i );
 		if( ( m_bAllDataList && !pAT->m_strActValue.IsEmpty() ) || (( pAT->m_iFlag > 0 ) && !m_bAllDataList) )
@@ -205,7 +208,7 @@ void CVerifyDlg::OnButtonDelPerson()
 		as.Delete();
 		as.MoveNext();
 	}
-	CPersonSet ps;
+	CPersonSet ps(dbOpenDynaset);
 	ps.m_strDBName.Format( "%s%s\\Ver%05d\\srcdb.mdb", MAIN_DIR, m_strDir, m_dwSrcID );
 	ps.m_strFilter.Format( "[PID]=%d", m_lcPerson.GetItemData( iSel ) );
 	ps.Open();

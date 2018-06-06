@@ -23,8 +23,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="f:\mysql\include"
-				PreprocessorDefinitions="_WORK"
+				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS"
 				StringPooling="TRUE"
 				RuntimeLibrary="0"
 				StructMemberAlignment="1"
@@ -41,11 +40,9 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="libmysql.lib"
 				OutputFile=".\Release/WorkDB.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="F:\mysql\lib\opt"
 				ProgramDatabaseFile=".\Release/WorkDB.pdb"
 				SubSystem="2"
 				TargetMachine="1"/>
@@ -89,8 +86,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="f:\mysql\include"
-				PreprocessorDefinitions="_WORK"
+				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="1"
 				StructMemberAlignment="1"
@@ -107,11 +103,9 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="libmysql.lib"
 				OutputFile=".\Debug/WorkDB.exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="f:\mysql\lib\debug"
 				GenerateDebugInformation="TRUE"
 				ProgramDatabaseFile=".\Debug/WorkDB.pdb"
 				SubSystem="2"
@@ -189,6 +183,24 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath="AttributesSet.cpp">
+				<FileConfiguration
+					Name="Release|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="2"
+						PreprocessorDefinitions=""/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="0"
+						PreprocessorDefinitions=""
+						BasicRuntimeChecks="3"/>
+				</FileConfiguration>
+			</File>
+			<File
 				RelativePath="AttributeType.cpp">
 				<FileConfiguration
 					Name="Release|Win32">
@@ -207,10 +219,277 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\persona\BinDBQuery.cpp">
+				RelativePath="AttributeTypeSet.cpp">
+				<FileConfiguration
+					Name="Release|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="2"
+						PreprocessorDefinitions=""/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="0"
+						PreprocessorDefinitions=""
+						BasicRuntimeChecks="3"/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="BinDBCreator.cpp">
+				<FileConfiguration
+					Name="Release|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="2"
+						PreprocessorDefinitions=""/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="0"
+						PreprocessorDefinitions=""
+						BasicRuntimeChecks="3"/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="BinDBQuery.cpp">
+				<FileConfiguration
+					Name="Release|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="2"
+						PreprocessorDefinitions=""/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="0"
+						PreprocessorDefinitions=""
+						BasicRuntimeChecks="3"/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="DataDatumDlg.cpp">
+				<FileConfiguration
+					Name="Release|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="2"
+						PreprocessorDefinitions=""/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="0"
+						PreprocessorDefinitions=""
+						BasicRuntimeChecks="3"/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="DataDatumIntervallumDlg.cpp">
+				<FileConfiguration
+					Name="Release|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="2"
+						PreprocessorDefinitions=""/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="0"
+						PreprocessorDefinitions=""
+						BasicRuntimeChecks="3"/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="DataDictAppendDlg.cpp">
+				<FileConfiguration
+					Name="Release|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="2"
+						PreprocessorDefinitions=""/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="0"
+						PreprocessorDefinitions=""
+						BasicRuntimeChecks="3"/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="DataDictStrongDlg.cpp">
+				<FileConfiguration
+					Name="Release|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="2"
+						PreprocessorDefinitions=""/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="0"
+						PreprocessorDefinitions=""
+						BasicRuntimeChecks="3"/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="DataNamesDlg.cpp">
+				<FileConfiguration
+					Name="Release|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="2"
+						PreprocessorDefinitions=""/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="0"
+						PreprocessorDefinitions=""
+						BasicRuntimeChecks="3"/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="DataSelDlg.cpp">
+				<FileConfiguration
+					Name="Release|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="2"
+						PreprocessorDefinitions=""/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="0"
+						PreprocessorDefinitions=""
+						BasicRuntimeChecks="3"/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="DataTextDlg.cpp">
+				<FileConfiguration
+					Name="Release|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="2"
+						PreprocessorDefinitions=""/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="0"
+						PreprocessorDefinitions=""
+						BasicRuntimeChecks="3"/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="DataTypeSet.cpp">
+				<FileConfiguration
+					Name="Release|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="2"
+						PreprocessorDefinitions=""/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="0"
+						PreprocessorDefinitions=""
+						BasicRuntimeChecks="3"/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="Dictionary.cpp">
+				<FileConfiguration
+					Name="Release|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="2"
+						PreprocessorDefinitions=""/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="0"
+						PreprocessorDefinitions=""
+						BasicRuntimeChecks="3"/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="DictionarySet.cpp">
+				<FileConfiguration
+					Name="Release|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="2"
+						PreprocessorDefinitions=""/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="0"
+						PreprocessorDefinitions=""
+						BasicRuntimeChecks="3"/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="ExportDlg.cpp">
+				<FileConfiguration
+					Name="Release|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="2"
+						PreprocessorDefinitions=""/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="0"
+						PreprocessorDefinitions=""
+						BasicRuntimeChecks="3"/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="FontCombo.cpp">
+				<FileConfiguration
+					Name="Release|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="2"
+						PreprocessorDefinitions=""/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="0"
+						PreprocessorDefinitions=""
+						BasicRuntimeChecks="3"/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="ImportDlg.cpp">
 				<FileConfiguration
 					Name="Release|Win32">
 					<Tool
@@ -246,13 +525,58 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath=".\LoginDlg.cpp">
+				RelativePath="OptionsDlg.cpp">
+				<FileConfiguration
+					Name="Release|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="2"
+						PreprocessorDefinitions=""/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="0"
+						PreprocessorDefinitions=""
+						BasicRuntimeChecks="3"/>
+				</FileConfiguration>
 			</File>
 			<File
-				RelativePath=".\MySQLOptionsDlg.cpp">
+				RelativePath="OptionsVerDlg.cpp">
+				<FileConfiguration
+					Name="Release|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="2"
+						PreprocessorDefinitions=""/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="0"
+						PreprocessorDefinitions=""
+						BasicRuntimeChecks="3"/>
+				</FileConfiguration>
 			</File>
 			<File
-				RelativePath=".\MySQLRecordSet.cpp">
+				RelativePath="PersonSet.cpp">
+				<FileConfiguration
+					Name="Release|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="2"
+						PreprocessorDefinitions=""/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="0"
+						PreprocessorDefinitions=""
+						BasicRuntimeChecks="3"/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="PrinterJob.cpp">
@@ -327,6 +651,24 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath="QueryDlg.cpp">
+				<FileConfiguration
+					Name="Release|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="2"
+						PreprocessorDefinitions=""/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="0"
+						PreprocessorDefinitions=""
+						BasicRuntimeChecks="3"/>
+				</FileConfiguration>
+			</File>
+			<File
 				RelativePath="ResultDlg.cpp">
 				<FileConfiguration
 					Name="Release|Win32">
@@ -363,40 +705,61 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath=".\SQLBinDBCreator.cpp">
-			</File>
-			<File
-				RelativePath=".\SQLBinSortColumn.cpp">
-			</File>
-			<File
-				RelativePath=".\SQLDeleteDlg.cpp">
-			</File>
-			<File
-				RelativePath=".\SQLImport.cpp">
-			</File>
-			<File
-				RelativePath=".\SQLProcessLogDLg.cpp">
-			</File>
-			<File
-				RelativePath=".\SQLQueryDlg.cpp">
-			</File>
-			<File
-				RelativePath=".\SQLRegistDlg.cpp">
-			</File>
-			<File
-				RelativePath=".\SQLSelectColumnDlg.cpp">
-			</File>
-			<File
-				RelativePath=".\SQLSelectDBDlg.cpp">
-			</File>
-			<File
-				RelativePath=".\SQLStaffDialog.cpp">
-			</File>
-			<File
-				RelativePath=".\SQLTextImportDlg.cpp">
+				RelativePath="SelDbToBinDlg.cpp">
+				<FileConfiguration
+					Name="Release|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="2"
+						PreprocessorDefinitions=""/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="0"
+						PreprocessorDefinitions=""
+						BasicRuntimeChecks="3"/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="SrcDBDlg.cpp">
+				<FileConfiguration
+					Name="Release|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="2"
+						PreprocessorDefinitions=""/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="0"
+						PreprocessorDefinitions=""
+						BasicRuntimeChecks="3"/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="SrcDBSet.cpp">
+				<FileConfiguration
+					Name="Release|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="2"
+						PreprocessorDefinitions=""/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="0"
+						PreprocessorDefinitions=""
+						BasicRuntimeChecks="3"/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="StaffDlg.cpp">
 				<FileConfiguration
 					Name="Release|Win32">
 					<Tool
@@ -431,6 +794,42 @@
 						PreprocessorDefinitions=""
 						BasicRuntimeChecks="3"
 						UsePrecompiledHeader="1"/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="TXTImportDlg.cpp">
+				<FileConfiguration
+					Name="Release|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="2"
+						PreprocessorDefinitions=""/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="0"
+						PreprocessorDefinitions=""
+						BasicRuntimeChecks="3"/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="VerifyDlg.cpp">
+				<FileConfiguration
+					Name="Release|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="2"
+						PreprocessorDefinitions=""/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="0"
+						PreprocessorDefinitions=""
+						BasicRuntimeChecks="3"/>
 				</FileConfiguration>
 			</File>
 			<File
@@ -483,25 +882,70 @@
 				RelativePath="AttributeNameDlg.h">
 			</File>
 			<File
+				RelativePath="AttributesSet.h">
+			</File>
+			<File
 				RelativePath="AttributeType.h">
 			</File>
 			<File
-				RelativePath="..\persona\BinDBQuery.h">
+				RelativePath="AttributeTypeSet.h">
+			</File>
+			<File
+				RelativePath="BinDBCreator.h">
+			</File>
+			<File
+				RelativePath="BinDBQuery.h">
+			</File>
+			<File
+				RelativePath="DataDatumDlg.h">
+			</File>
+			<File
+				RelativePath="DataDatumIntervallumDlg.h">
+			</File>
+			<File
+				RelativePath="DataDictAppendDlg.h">
+			</File>
+			<File
+				RelativePath="DataDictStrongDlg.h">
+			</File>
+			<File
+				RelativePath="DataNamesDlg.h">
+			</File>
+			<File
+				RelativePath="DataSelDlg.h">
+			</File>
+			<File
+				RelativePath="DataTextDlg.h">
+			</File>
+			<File
+				RelativePath="DataTypeSet.h">
+			</File>
+			<File
+				RelativePath="Dictionary.h">
+			</File>
+			<File
+				RelativePath="DictionarySet.h">
+			</File>
+			<File
+				RelativePath="ExportDlg.h">
 			</File>
 			<File
 				RelativePath="FontCombo.h">
 			</File>
 			<File
+				RelativePath="ImportDlg.h">
+			</File>
+			<File
 				RelativePath="ListCtrlPrint.h">
 			</File>
 			<File
-				RelativePath=".\LoginDlg.h">
+				RelativePath="OptionsDlg.h">
 			</File>
 			<File
-				RelativePath=".\MySQLOptionsDlg.h">
+				RelativePath="OptionsVerDlg.h">
 			</File>
 			<File
-				RelativePath=".\MySQLRecordSet.h">
+				RelativePath="PersonSet.h">
 			</File>
 			<File
 				RelativePath="PrinterJob.h">
@@ -516,6 +960,9 @@
 				RelativePath="ProgDlg.h">
 			</File>
 			<File
+				RelativePath="QueryDlg.h">
+			</File>
+			<File
 				RelativePath="Resource.h">
 			</File>
 			<File
@@ -525,46 +972,25 @@
 				RelativePath="ResultOptionDlg.h">
 			</File>
 			<File
-				RelativePath=".\SQLBinDBCreator.h">
-			</File>
-			<File
-				RelativePath=".\SQLBinSortColumn.h">
-			</File>
-			<File
-				RelativePath=".\SQLDeleteDlg.h">
-			</File>
-			<File
-				RelativePath=".\SQLImport.h">
-			</File>
-			<File
-				RelativePath=".\SQLProcessLogDLg.h">
-			</File>
-			<File
-				RelativePath=".\SQLQueryDlg.h">
-			</File>
-			<File
-				RelativePath=".\SQLRegistDlg.h">
-			</File>
-			<File
-				RelativePath=".\SQLSelectColumnDlg.h">
-			</File>
-			<File
-				RelativePath=".\SQLSelectDBDlg.h">
-			</File>
-			<File
-				RelativePath=".\SQLStaffDialog.h">
-			</File>
-			<File
-				RelativePath=".\SQLTextImportDlg.h">
+				RelativePath="SelDbToBinDlg.h">
 			</File>
 			<File
 				RelativePath="SrcDBDlg.h">
+			</File>
+			<File
+				RelativePath="SrcDBSet.h">
+			</File>
+			<File
+				RelativePath="StaffDlg.h">
 			</File>
 			<File
 				RelativePath="StdAfx.h">
 			</File>
 			<File
 				RelativePath="TXTImportDlg.h">
+			</File>
+			<File
+				RelativePath="VerifyDlg.h">
 			</File>
 			<File
 				RelativePath="WorkDB.h">
@@ -591,8 +1017,5 @@
 		</File>
 	</Files>
 	<Globals>
-		<Global
-			Name="RESOURCE_FILE"
-			Value="WorkDB.rc"/>
 	</Globals>
 </VisualStudioProject>

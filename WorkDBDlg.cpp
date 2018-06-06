@@ -1,17 +1,12 @@
 #include "stdafx.h"
 #include "WorkDB.h"
 #include "WorkDBDlg.h"
-
-#include "SQLStaffDialog.h"
-#include "SQLRegistDlg.h"
-#include "SQLImport.h"
-#include "SQLDeleteDlg.h"
-#include "SQLQueryDlg.h"
-#include "SQLSelectDBDlg.h"
-#include "SQLSelectColumnDlg.h"
-#include "SQLBinDBCreator.h"
-#include "SQLBinSortColumn.h"
-#include "MySQLOptionsDlg.h"
+#include "StaffDlg.h"
+#include "ExportDlg.h"
+#include "ImportDlg.h"
+#include "BinDBCreator.h"
+#include "QueryDlg.h"
+#include "SelDbToBinDlg.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -21,38 +16,81 @@ static char THIS_FILE[] = __FILE__;
 
 /////////////////////////////////////////////////////////////////////////////
 // CAboutDlg dialog used for App About
+
 class CAboutDlg : public CDialog
 {
 public:
-	CAboutDlg() : CDialog( CAboutDlg::IDD ){}
+	CAboutDlg();
+
+// Dialog Data
+	//{{AFX_DATA(CAboutDlg)
 	enum { IDD = IDD_ABOUTBOX };
+	//}}AFX_DATA
+
+	// ClassWizard generated virtual function overrides
+	//{{AFX_VIRTUAL(CAboutDlg)
+	protected:
+	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
+	//}}AFX_VIRTUAL
+
+// Implementation
 protected:
+	//{{AFX_MSG(CAboutDlg)
+	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 };
+
+CAboutDlg::CAboutDlg() : CDialog(CAboutDlg::IDD)
+{
+	//{{AFX_DATA_INIT(CAboutDlg)
+	//}}AFX_DATA_INIT
+}
+
+void CAboutDlg::DoDataExchange(CDataExchange* pDX)
+{
+	CDialog::DoDataExchange(pDX);
+	//{{AFX_DATA_MAP(CAboutDlg)
+	//}}AFX_DATA_MAP
+}
+
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
+	//{{AFX_MSG_MAP(CAboutDlg)
+		// No message handlers
+	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
 // CWorkDBDlg dialog
 
-CWorkDBDlg::CWorkDBDlg( CWnd* pParent )
-	: CDialog( CWorkDBDlg::IDD, pParent )
+CWorkDBDlg::CWorkDBDlg(CWnd* pParent /*=NULL*/)
+	: CDialog(CWorkDBDlg::IDD, pParent)
 {
+	//{{AFX_DATA_INIT(CWorkDBDlg)
+		// NOTE: the ClassWizard will add member initialization here
+	//}}AFX_DATA_INIT
+	// Note that LoadIcon does not require a subsequent DestroyIcon in Win32
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
 
+void CWorkDBDlg::DoDataExchange(CDataExchange* pDX)
+{
+	CDialog::DoDataExchange(pDX);
+	//{{AFX_DATA_MAP(CWorkDBDlg)
+		// NOTE: the ClassWizard will add DDX and DDV calls here
+	//}}AFX_DATA_MAP
+}
+
 BEGIN_MESSAGE_MAP(CWorkDBDlg, CDialog)
+	//{{AFX_MSG_MAP(CWorkDBDlg)
 	ON_WM_SYSCOMMAND()
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
-	ON_BN_CLICKED(IDC_BUTTON_SQL_INSERT, OnBnClickedButtonSqlInsert)
-	ON_BN_CLICKED(IDC_BUTTON_SQL_DELETE, OnBnClickedButtonSqlDelete)
-	ON_BN_CLICKED(IDC_BUTTON_SQL_QUERY, OnBnClickedButtonSqlQuery)
-	ON_BN_CLICKED(IDC_BUTTON_SQL_DATATYPE, OnBnClickedButtonSqlDatatype)
-	ON_BN_CLICKED(IDC_BUTTON_SQL_REGIST, OnBnClickedButtonSqlRegist)
-   ON_BN_CLICKED(IDC_BUTTON_SQL_BIN, OnBnClickedButtonSqlBin)
-   ON_BN_CLICKED(IDC_BUTTON_MYSQL_OPTIONS, OnBnClickedButtonMysqlOptions)
-   ON_BN_CLICKED(IDC_BUTTON_SQL_BINSORT, OnBnClickedButtonSqlBinsort)
+	ON_BN_CLICKED(IDC_BUTTON_EXPORT, OnButtonExport)
+	ON_BN_CLICKED(IDC_BUTTON_DATATYPE, OnButtonDatatype)
+	ON_BN_CLICKED(IDC_BUTTON_IMPORT, OnButtonImport)
+	ON_BN_CLICKED(IDC_BUTTON_BIN, OnButtonBin)
+	ON_BN_CLICKED(IDC_BUTTON_FTP, OnButtonFtp)
+	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -63,32 +101,42 @@ BOOL CWorkDBDlg::OnInitDialog()
 	CDialog::OnInitDialog();
 
 	// Add "About..." menu item to system menu.
+
 	// IDM_ABOUTBOX must be in the system command range.
 	ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
 	ASSERT(IDM_ABOUTBOX < 0xF000);
 
-	CMenu* pSysMenu = GetSystemMenu( FALSE );
-	if( pSysMenu != NULL )
+	CMenu* pSysMenu = GetSystemMenu(FALSE);
+	if (pSysMenu != NULL)
 	{
 		CString strAboutMenu;
-		strAboutMenu.LoadString( IDS_ABOUTBOX );
-		if( !strAboutMenu.IsEmpty() )
+		strAboutMenu.LoadString(IDS_ABOUTBOX);
+		if (!strAboutMenu.IsEmpty())
 		{
-			pSysMenu->AppendMenu( MF_SEPARATOR );
-			pSysMenu->AppendMenu( MF_STRING, IDM_ABOUTBOX, strAboutMenu );
+			pSysMenu->AppendMenu(MF_SEPARATOR);
+			pSysMenu->AppendMenu(MF_STRING, IDM_ABOUTBOX, strAboutMenu);
 		}
 	}
+
 	// Set the icon for this dialog.  The framework does this automatically
 	//  when the application's main window is not a dialog
-	SetIcon( m_hIcon, TRUE  );		// Set big icon
-	SetIcon( m_hIcon, FALSE );		// Set small icon
+	SetIcon(m_hIcon, TRUE);			// Set big icon
+	SetIcon(m_hIcon, FALSE);		// Set small icon
+	
+	// TODO: Add extra initialization here
+#ifdef ONLY_QUERY
+	GetDlgItem( IDC_BUTTON_EXPORT )->EnableWindow( FALSE );
+	GetDlgItem( IDC_BUTTON_DATATYPE )->EnableWindow( FALSE );
+	GetDlgItem( IDC_BUTTON_IMPORT )->EnableWindow( FALSE );
+	GetDlgItem( IDC_BUTTON_BIN )->EnableWindow( FALSE );
+#endif
 
-	return( TRUE );
+	return TRUE;  // return TRUE  unless you set the focus to a control
 }
 
 void CWorkDBDlg::OnSysCommand(UINT nID, LPARAM lParam)
 {
-	if( ( nID & 0xFFF0 ) == IDM_ABOUTBOX )
+	if ((nID & 0xFFF0) == IDM_ABOUTBOX)
 	{
 		CAboutDlg dlgAbout;
 		dlgAbout.DoModal();
@@ -135,59 +183,41 @@ HCURSOR CWorkDBDlg::OnQueryDragIcon()
 	return (HCURSOR) m_hIcon;
 }
 
-void CWorkDBDlg::OnBnClickedButtonSqlDatatype()
+void CWorkDBDlg::OnButtonDatatype() 
 {
-	CSQLStaffDialog sd( this );
-	sd.DoModal();
+	CStaffDlg std;
+	std.DoModal();
 }
 
-void CWorkDBDlg::OnBnClickedButtonSqlRegist()
+void CWorkDBDlg::OnButtonExport() 
 {
-	CSQLRegistDlg rd( this );
-	rd.DoModal();
+	CExportDlg ed;
+	ed.DoModal();
 }
 
-void CWorkDBDlg::OnBnClickedButtonSqlInsert()
+void CWorkDBDlg::OnButtonImport() 
 {
-	CSQLImport id( this );
+	CImportDlg id;
 	id.DoModal();
 }
 
-void CWorkDBDlg::OnBnClickedButtonSqlDelete()
+void CWorkDBDlg::OnButtonBin() 
 {
-	CSQLDeleteDlg dd( this );
-	dd.DoModal();
+	CDWordArray arrIDS;
+	CSelDbToBinDlg sdtb( &arrIDS );
+
+	if( sdtb.DoModal() == IDOK )
+		if( arrIDS.GetSize() > 0 )
+		{
+			CBinDBCreator bc( &arrIDS );
+			bc.Do();
+		}
+		else
+			AfxMessageBox( "Nincs adatbázis kiválasztva indexeléshez!" );
 }
 
-
-void CWorkDBDlg::OnBnClickedButtonSqlBin()
+void CWorkDBDlg::OnButtonFtp()
 {
-   CSQLSelectDBDlg sd( this );
-   if( sd.DoModal() == IDOK )
-   {
-      CSQLBinDBCreator dbc( &sd.m_arrIDs );
-      dbc.Do();
-   }
-}
-
-void CWorkDBDlg::OnBnClickedButtonSqlBinsort()
-{
-   CSQLBinSortColumn bs;
-   CSQLSelectColumnDlg dlg( &bs, this );
-   if( dlg.DoModal() == IDOK )
-   {
-      bs.Do();
-   }
-}
-
-void CWorkDBDlg::OnBnClickedButtonSqlQuery()
-{
-	CSQLQueryDlg qd( this );
+	CQueryDlg qd;
 	qd.DoModal();
-}
-
-void CWorkDBDlg::OnBnClickedButtonMysqlOptions()
-{
-   CMySQLOptionsDlg mo( this );
-   mo.DoModal();
 }

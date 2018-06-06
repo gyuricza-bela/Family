@@ -43,8 +43,15 @@ BOOL CSrcDBDlg::OnInitDialog()
 	while( bWorking )
 	{
 		bWorking = finder.FindNextFile();
-		if( finder.GetFileName() != "." && ( finder.GetFileName() != ".." ) )
-			m_cbDirs.AddString( finder.GetFileName() );
+      if( finder.IsDirectory() )
+         if( finder.GetFileName() != "." && ( finder.GetFileName() != ".." ) )
+         {
+            m_cbDirs.AddString( finder.GetFileName() );
+         }
+	}
+	if (m_cbDirs.GetCount() > 0)
+	{
+		m_cbDirs.SetCurSel(0);
 	}
 
 	return( TRUE );

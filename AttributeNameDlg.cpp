@@ -17,10 +17,9 @@ static char THIS_FILE[] = __FILE__;
 
 CAttributeNameDlg::CAttributeNameDlg(CWnd* pParent /*=NULL*/)
 	: CDialog(CAttributeNameDlg::IDD, pParent)
+	, m_iOrder(999)
 {
 	//{{AFX_DATA_INIT(CAttributeNameDlg)
-	m_stcMsg = _T("");
-	m_strName = _T("");
 	//}}AFX_DATA_INIT
 }
 
@@ -31,6 +30,8 @@ void CAttributeNameDlg::DoDataExchange(CDataExchange* pDX)
 	//{{AFX_DATA_MAP(CAttributeNameDlg)
 	DDX_Text(pDX, IDC_STATIC_MSG, m_stcMsg);
 	DDX_Text(pDX, IDC_EDIT1, m_strName);
+	DDX_Text(pDX, IDC_EDIT2, m_iOrder);
+	DDV_MinMaxInt(pDX, m_iOrder, 1, 9999);
 	//}}AFX_DATA_MAP
 }
 

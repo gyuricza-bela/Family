@@ -5,10 +5,10 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-//#include "BinDBQuery.h"
+#include "BinDBQuery.h"
 #include "PrinterJob.h"
 #include "PrintStatus.h"
-#include <math.h>
+#include <stdlib.h>
 
 #ifdef _DEBUG
 #undef THIS_FILE
@@ -69,8 +69,7 @@ BOOL CPrinterJob::DoPreparePrinting( CPrintInfo * pInfo )
 	if( pInfo->m_pPD->m_pd.hDC == NULL )
 		return( FALSE );
 	pInfo->m_nNumPreviewPages = AfxGetApp()->m_nNumPreviewPages;
-	
-	pInfo->m_strPageDesc = _T("%%u. lap\Összesen: %%u-%%u\n");
+	VERIFY( pInfo->m_strPageDesc.LoadString( AFX_IDS_PREVIEWPAGEDESC ) );
 
 	return( TRUE );
 }
@@ -137,7 +136,7 @@ void CPrinterJob::OnFilePrint()
 		dlgPrintStatus.SetWindowText(cs);
 		
 		dlgPrintStatus.GetDlgItemText(IDC_TEXT1, csFormat);
-		//AfxFormatString1(strTemp, nFormatID, strPortName);
+		AfxFormatString1(strTemp, nFormatID, strPortName);
 		cs.Format(csFormat, strTitle, printInfo.m_pPD->GetDeviceName(), strTemp);
 		dlgPrintStatus.SetDlgItemText(IDC_TEXT1, cs);
 
@@ -168,8 +167,7 @@ void CPrinterJob::OnFilePrint()
 		if (nStartPage > printInfo.GetMaxPage()) nStartPage = printInfo.GetMaxPage();
 		int nStep = (nEndPage >= nStartPage) ? 1 : -1;
 		nEndPage = (nEndPage == 0xffff) ? 0xffff : nEndPage + nStep;
-		int iPageTot = (int)fabs(fabs((double)nEndPage) - fabs((double)nStartPage));
-		int iPrintedPages = 0;
+		int iPageTot = fabs(fabs((double)nEndPage) - fabs((double)nStartPage)), iPrintedPages = 0;
 		CString csPageFormat;
 		dlgPrintStatus.GetDlgItemText(IDC_PAGES, csPageFormat);
 

@@ -184,7 +184,7 @@ BOOL CQueryDlg::FillControls( void )
 	m_cbbAT2.SetItemData( iAct, 0xfffffffe );
 	iAct = m_cbbAT2.AddString( "Keresztnév" );
 	m_cbbAT2.SetItemData( iAct, 0xffffffff );
-	for( i = 0; i < (int )m_binDB.m_dwAttributeCounter; i++ )
+	for( int i = 0; i < (int )m_binDB.m_dwAttributeCounter; i++ )
 		if( m_binDB.IsAttributeTypeTextByIdx( i ) )
 		{
 			iAct = m_cbbAT2.AddString( m_binDB.GetAttributeNameByIdx( i ) );
@@ -201,7 +201,7 @@ BOOL CQueryDlg::FillControls( void )
 	m_cbbAT3.SetItemData( iAct, 0xfffffffe );
 	iAct = m_cbbAT3.AddString( "Keresztnév" );
 	m_cbbAT3.SetItemData( iAct, 0xffffffff );
-	for( i = 0; i < (int )m_binDB.m_dwAttributeCounter; i++ )
+	for( int i = 0; i < (int )m_binDB.m_dwAttributeCounter; i++ )
 		if( m_binDB.IsAttributeTypeTextByIdx( i ) )
 		{
 			iAct = m_cbbAT3.AddString( m_binDB.GetAttributeNameByIdx( i ) );
@@ -214,7 +214,7 @@ BOOL CQueryDlg::FillControls( void )
 
 	iAct = m_cbbAD1.AddString( "Bármelyik dátum típusú adatban" );
 	m_cbbAD1.SetItemData( iAct, 0 );
-	for( i = 0; i < (int )m_binDB.m_dwAttributeCounter; i++ )
+	for( int i = 0; i < (int )m_binDB.m_dwAttributeCounter; i++ )
 		if( m_binDB.IsAttributeTypeDateByIdx( i ) )
 		{
 			iAct = m_cbbAD1.AddString( m_binDB.GetAttributeNameByIdx( i ) );
@@ -224,7 +224,7 @@ BOOL CQueryDlg::FillControls( void )
 
 	iAct = m_cbbAD2.AddString( "Bármelyik dátum típusú adatban" );
 	m_cbbAD2.SetItemData( iAct, 0 );
-	for( i = 0; i < (int )m_binDB.m_dwAttributeCounter; i++ )
+	for( int i = 0; i < (int )m_binDB.m_dwAttributeCounter; i++ )
 		if( m_binDB.IsAttributeTypeDateByIdx( i ) )
 		{
 			iAct = m_cbbAD2.AddString( m_binDB.GetAttributeNameByIdx( i ) );
@@ -234,7 +234,7 @@ BOOL CQueryDlg::FillControls( void )
 
 	iAct = m_cbbAD3.AddString( "Bármelyik dátum típusú adatban" );
 	m_cbbAD3.SetItemData( iAct, 0 );
-	for( i = 0; i < (int )m_binDB.m_dwAttributeCounter; i++ )
+	for( int i = 0; i < (int )m_binDB.m_dwAttributeCounter; i++ )
 		if( m_binDB.IsAttributeTypeDateByIdx( i ) )
 		{
 			iAct = m_cbbAD3.AddString( m_binDB.GetAttributeNameByIdx( i ) );
@@ -244,7 +244,7 @@ BOOL CQueryDlg::FillControls( void )
 
 	iAct = m_cbbAN.AddString( "Bármelyik szám típusú adatban" );
 	m_cbbAN.SetItemData( iAct, 0 );
-	for( i = 0; i < (int )m_binDB.m_dwAttributeCounter; i++ )
+	for( int i = 0; i < (int )m_binDB.m_dwAttributeCounter; i++ )
 		if( m_binDB.IsAttributeTypeNumByIdx( i ) )
 		{
 			iAct = m_cbbAN.AddString( m_binDB.GetAttributeNameByIdx( i ) );
