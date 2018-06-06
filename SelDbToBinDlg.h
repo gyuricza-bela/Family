@@ -25,6 +25,9 @@ protected:
 	virtual void OnOK();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
+public:
+   afx_msg void OnBnClickedButtonSelectAll();
+   afx_msg void OnBnClickedButtonSelectNone();
 };
 //{{AFX_INSERT_LOCATION}}
 #endif // !defined(AFX_SELDBTOBINDLG_H__11FEEB43_5571_11D5_9D90_006052042321__INCLUDED_)

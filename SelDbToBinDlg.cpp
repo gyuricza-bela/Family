@@ -12,6 +12,8 @@ static char THIS_FILE[] = __FILE__;
 BEGIN_MESSAGE_MAP(CSelDbToBinDlg, CDialog)
 	//{{AFX_MSG_MAP(CSelDbToBinDlg)
 	//}}AFX_MSG_MAP
+   ON_BN_CLICKED( IDC_BUTTON_SELECT_ALL, &CSelDbToBinDlg::OnBnClickedButtonSelectAll )
+   ON_BN_CLICKED( IDC_BUTTON_SELECT_NONE, &CSelDbToBinDlg::OnBnClickedButtonSelectNone )
 END_MESSAGE_MAP()
 
 CSelDbToBinDlg::CSelDbToBinDlg( CDWordArray *pIDS, CWnd* pParent )
@@ -66,4 +68,22 @@ void CSelDbToBinDlg::OnOK()
 				m_pIDS->Add( m_lbSel.GetItemData( i ) );
 
 	CDialog::OnOK();
+}
+
+
+void CSelDbToBinDlg::OnBnClickedButtonSelectAll()
+{
+   for( int i = 0; i < m_lbSel.GetCount(); i++ )
+   {
+      m_lbSel.SetCheck( i, 1 );
+   }
+}
+
+
+void CSelDbToBinDlg::OnBnClickedButtonSelectNone()
+{
+   for( int i = 0; i < m_lbSel.GetCount(); i++ )
+   {
+      m_lbSel.SetCheck( i, 0 );
+   }
 }
