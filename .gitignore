@@ -1,0 +1,13 @@
+*.bin
+*.suo
+*.mdb
+*.user
+*.plg
+*.sdf
+*.opt
+*.ncb
+*.aps
+*.opensdf
+debug/*
+release/*
+ipch/*
