@@ -16,6 +16,149 @@ static char THIS_FILE[]=__FILE__;
 
 #define FIND_ERROR 0xffffffff
 
+struct FULLEDATEVALUE
+{
+	int iPID;
+	int iAttributeID;
+	CString strValue;
+};
+
+class CDateUnifier
+{
+public:
+	CDateUnifier()
+	{
+	}
+
+	static void Init( LPCTSTR lpcDBName )
+	{
+		if( sm_mapOrderDate.size() == 0 )
+		{
+			CAttributeTypeSet ats;
+			ats.m_strSort = _T( "[Order],[DataType]" );
+			ats.m_strDBName = lpcDBName;
+			ats.Open();
+			while( !ats.IsEOF() )
+			{
+				if( ats.m_DataType == 1 )
+				{
+					sm_mapDateOrder[ ats.m_AttributeID ] = ats.m_Order;
+					sm_mapOrderDate[ ats.m_Order ] = ats.m_AttributeID;
+				}
+				else if( ats.m_DataType >= 7 )
+				{
+					sm_mapDatepartDate[ ats.m_AttributeID ] = sm_mapOrderDate[ ats.m_Order ];
+					sm_mapDatepartDataType[ ats.m_AttributeID ] = ats.m_DataType;
+				}
+				ats.MoveNext();
+			}
+		}
+	}
+
+	void AddAttrib( int iAttributeID, CString strValue )
+	{
+		// int iField = 0;
+		if( sm_mapDateOrder.find( iAttributeID ) != sm_mapDateOrder.end() )
+		{
+			m_mapFields[ iAttributeID ] |= 8;
+			m_mapDateData[ iAttributeID ] = strValue;
+			// iField = mapFields[ iAttributeID ];
+		}
+		else if( sm_mapDatepartDataType.find( iAttributeID ) != sm_mapDatepartDataType.end() )
+		{
+			int iField = 1 << ( sm_mapDatepartDataType[ iAttributeID ] - 7 );
+			m_mapFields[ sm_mapDatepartDate[ iAttributeID ] ] |= iField;
+			m_mapDateData[ iAttributeID ] = strValue;
+			// iField = mapFields[ mapDatepartDate[ pats.m_AttributeID ] ];
+		}
+	}
+
+	void UpdatFullDate( int iPID )
+	{
+		for( auto attrFields : m_mapFields )
+		{
+			CString year = _T("*"), month = _T( "*" ), day = _T( "*" );
+
+			for( auto a : m_mapDateData )
+			{
+				if( sm_mapDatepartDate[ a.first ] == attrFields.first )
+				{
+					int iValue = _ttoi( m_mapDateData[ a.first ] );
+					if( iValue > 0 )
+					{
+						CString s;
+						s.Format( _T( "%02d" ), iValue );
+						switch( sm_mapDatepartDataType[ a.first ] )
+						{
+							case 7: year = s; break; // year
+							case 8: month = s; break; // month
+							case 9: day = s; break; // day
+						}
+					}
+				}
+			}
+
+			CString newValue;
+			newValue.Format( _T( "%s.%s.%s" ), year, month, day );
+			if( newValue != _T( "*.*.*" ) )
+			{
+				if( attrFields.second <= 7 ) // insert
+				{
+					FULLEDATEVALUE fdv;
+					fdv.iPID = iPID;
+					fdv.iAttributeID = attrFields.first;
+					fdv.strValue = newValue;
+					sm_vecToAppend.push_back( fdv );
+				}
+				//else
+				//{
+				//	CString oldValue;
+				//	if( newValue != oldValue )
+				//	{
+				//		// update
+				//	}
+				//}
+			}
+		}
+	}
+
+	static void AppendFullDates( CAttributesSet& pats )
+	{
+		for( auto fdv : sm_vecToAppend )
+		{
+			pats.AddNew();
+			pats.m_AttributeID = fdv.iAttributeID;
+			pats.m_PID = fdv.iPID;
+			pats.m_Value = fdv.strValue;
+			pats.Update();
+		}
+		sm_vecToAppend.clear();
+	}
+
+	void ClearData()
+	{
+		m_mapFields.clear();
+		m_mapDateData.clear();
+	}
+
+protected:
+	std::map<int, int> m_mapFields;
+	std::map<int, CString> m_mapDateData;
+
+	static std::map<int, int> sm_mapDateOrder;
+	static std::map<int, int> sm_mapOrderDate;
+	static std::map<int, int> sm_mapDatepartDate;
+	static std::map<int, int> sm_mapDatepartDataType;
+
+	static std::vector<FULLEDATEVALUE> sm_vecToAppend;
+
+};
+std::map<int, int> CDateUnifier::sm_mapDateOrder;
+std::map<int, int> CDateUnifier::sm_mapOrderDate;
+std::map<int, int> CDateUnifier::sm_mapDatepartDate;
+std::map<int, int> CDateUnifier::sm_mapDatepartDataType;
+std::vector<FULLEDATEVALUE> CDateUnifier::sm_vecToAppend;
+
 CBinDBCreator::CBinDBCreator( CDWordArray *pIDS )
 {
 	m_dwMaxAttribute	= MAX_PUFFER_ATTRIBUTETYPE;
@@ -166,34 +309,9 @@ BOOL CBinDBCreator::Do()
 	return( Save_2() );
 }
 
-std::map<int, int> mapDateOrder;
-std::map<int, int> mapOrderDate;
-std::map<int, int> mapDatepartDate;
-std::map<int, int> mapDatepartDataType;
-
 BOOL CBinDBCreator::ProcessDB_0( LPCSTR lpcDBName, int iDB, int iAct, int iMaxDB )
 {
-   if( mapOrderDate.size() == 0 )
-   {
-      CAttributeTypeSet ats;
-      ats.m_strSort = _T( "[Order],[DataType]" );
-      ats.m_strDBName = lpcDBName;
-      ats.Open();
-      while( !ats.IsEOF() )
-      {
-         if( ats.m_DataType == 1 )
-         {
-            mapDateOrder[ ats.m_AttributeID ] = ats.m_Order;
-            mapOrderDate[ ats.m_Order ] = ats.m_AttributeID;
-         }
-         else if( ats.m_DataType >= 7 )
-         {
-            mapDatepartDate[ ats.m_AttributeID ] = mapOrderDate[ ats.m_Order ];
-            mapDatepartDataType[ ats.m_AttributeID ] = ats.m_DataType;
-         }
-         ats.MoveNext();
-      }
-   }
+	CDateUnifier::Init( lpcDBName );
 
    CAttributesSet pats;
    pats.m_strDBName = lpcDBName;
@@ -201,8 +319,7 @@ BOOL CBinDBCreator::ProcessDB_0( LPCSTR lpcDBName, int iDB, int iAct, int iMaxDB
    pats.Open();
 
    int iPrev = 0;
-   std::map<int,int> mapFields;
-   std::map<int, CString> mapDateData;
+	CDateUnifier dateUni;
 
    while( !pats.IsEOF() )
    {
@@ -210,32 +327,23 @@ BOOL CBinDBCreator::ProcessDB_0( LPCSTR lpcDBName, int iDB, int iAct, int iMaxDB
       {
          if( iPrev > 0 )
          {
-            for( auto a : mapFields )
-            {
-
-            }
+				dateUni.UpdatFullDate( iPrev );
          }
-         iPrev = 0;
-         mapFields.clear();
-         mapDateData.clear();
+         iPrev = pats.m_PID;
+			dateUni.ClearData();
       }
 
-      int iField = 0;
-      if( mapDateOrder.find( pats.m_AttributeID ) != mapDateOrder.end() )
-      {
-         mapFields[ pats.m_AttributeID ] |= 8;
-         mapDateData[ pats.m_AttributeID ] = pats.m_Value;
-         iField = mapFields[ pats.m_AttributeID ];
-      }
-      else if( mapDatepartDataType.find( pats.m_AttributeID ) != mapDatepartDataType.end() )
-      {
-         iField = 1 << ( mapDatepartDataType[ pats.m_AttributeID ] - 7 );
-         mapFields[ mapDatepartDate[ pats.m_AttributeID ] ] |= iField;
-         iField = mapFields[ mapDatepartDate[ pats.m_AttributeID ] ];
-      }
+		dateUni.AddAttrib( pats.m_AttributeID, pats.m_Value );
 
       pats.MoveNext();
    }
+	if( iPrev > 0 )
+	{
+		dateUni.UpdatFullDate( iPrev );
+	}
+
+	CDateUnifier::AppendFullDates( pats );
+
    return( TRUE );
 }
 
