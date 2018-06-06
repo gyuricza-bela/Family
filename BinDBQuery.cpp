@@ -562,8 +562,8 @@ BOOL CBinDBQuery::VerifyText( int iIdx, LPCSTR lpcFilter, int iWord, BOOL bLever
 
 BOOL CBinDBQuery::VerifyDate( int iIdx, int iY1, int iM1, int iD1, int iY2, int iM2, int iD2, DWORD dwAID )
 {
-	DWORD dwFilterLO = iY1 * 10000 + iM1 * 100 + iD1;
-	DWORD dwFilterHI = iY2 * 10000 + iM2 * 100 + iD2;
+   DWORD dwFilterLO = iY1 * 10000 + ( iY1 > 0 ? iM1 * 100 + iD1 : 0 );
+   DWORD dwFilterHI = iY2 > 0 ? ( iY2 * 10000 + ( iM2 > 0 ? iM2 : 12 ) * 100 + ( iD2 > 0 ? iD2 : 31 ) ) : 20991231;
 
 	BIN_PERSONIDX *pPI = &m_pPersonIdx[ iIdx ];
 	for( int j = pPI->dwDataOffset; j < (int)pPI[ 1 ].dwDataOffset; j++ )
