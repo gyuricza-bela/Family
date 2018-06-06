@@ -20,6 +20,7 @@ public:
 	//}}AFX_DATA
 
 protected:
+   void AddToMdbList( DWORD dwID, LPCTSTR lpcField, bool bSelect );
 	void FormatValueDType( DWORD dwATP, LPCSTR lpcSrc, LPSTR lpsDesc, int iLen = 50 );
 	void DeleteNameAttrib(CString strTxtField);
 

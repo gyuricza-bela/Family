@@ -67,6 +67,8 @@ BOOL CTXTImportDlg::OnInitDialog()
 {
 	CDialog::OnInitDialog();
 
+   m_lcBinds.SetExtendedStyle( m_lcBinds.GetExtendedStyle() | LVS_EX_FULLROWSELECT );
+
 	CRect r;
 	m_lcBinds.GetClientRect( &r );
 	r.right -= GetSystemMetrics( SM_CXVSCROLL );
@@ -137,12 +139,32 @@ void CTXTImportDlg::OnButtonBind()
 	if( iSelTXT < 0 )
 		return;
 
+   std::map<long, int> order;
+   for( int i = 0; i < m_theAttributeType.m_theArray.GetCount(); i++ )
+   {
+      ATTRIBUTE_TYPE *pAT = (ATTRIBUTE_TYPE*)m_theAttributeType.m_theArray.GetAt( i );
+      order[ pAT->m_lAttributeID ] = pAT->m_iOrder;
+   }
+
+   int iOrder = order[ m_lbMDB.GetItemData( iSelMDB ) ];
+   int iIdx = 0;
+   while( iIdx < m_lcBinds.GetItemCount() )
+   {
+      if( iOrder < order[ m_lcBinds.GetItemData( iIdx ) ] )
+      {
+         break;
+      }
+      ++iIdx;
+   }
+
 	CString str;
 	m_lbMDB.GetText( iSelMDB, str );
-	int iIdx = m_lcBinds.InsertItem( m_lcBinds.GetItemCount(), str );
+	iIdx = m_lcBinds.InsertItem( iIdx, str );
 	m_lcBinds.SetItemData( iIdx, m_lbMDB.GetItemData( iSelMDB ) );
 	m_lbTXT.GetText( iSelTXT, str );
 	m_lcBinds.SetItemText( iIdx, 1, str );
+   m_lcBinds.SetItemState( iIdx, LVNI_SELECTED, LVNI_SELECTED );
+   m_lcBinds.SetFocus();
 
 	m_lbMDB.DeleteString( iSelMDB );
 	m_lbTXT.DeleteString( iSelTXT );
@@ -155,13 +177,38 @@ void CTXTImportDlg::OnButtonDel()
 		return;
 	CString strMDB = m_lcBinds.GetItemText( iSel, 0 );
 	CString strTXT = m_lcBinds.GetItemText( iSel, 1 );
-	DWORD dw = m_lcBinds.GetItemData( iSel );
-	int iIdx = m_lbMDB.AddString( strMDB );
-	m_lbMDB.SetItemData( iIdx, dw );
-	m_lbMDB.SetCurSel( iIdx );
-	iIdx = m_lbTXT.AddString( strTXT );
+   AddToMdbList( m_lcBinds.GetItemData( iSel ), strMDB, true );
+	int iIdx = m_lbTXT.AddString( strTXT );
 	m_lbTXT.SetCurSel( iIdx );
 	m_lcBinds.DeleteItem( iSel );
+}
+
+void CTXTImportDlg::AddToMdbList( DWORD dwID, LPCTSTR lpcField, bool bSelect )
+{
+   std::map<long, int> order;
+   for( int i = 0; i < m_theAttributeType.m_theArray.GetCount(); i++ )
+   {
+      ATTRIBUTE_TYPE *pAT = (ATTRIBUTE_TYPE*)m_theAttributeType.m_theArray.GetAt( i );
+      order[ pAT->m_lAttributeID ] = pAT->m_iOrder;
+   }
+
+   int iOrder = order[ dwID ];
+   int iIdx = 0;
+   while( iIdx < m_lbMDB.GetCount() )
+   {
+      if( iOrder < order[ m_lbMDB.GetItemData( iIdx ) ] )
+      {
+         break;
+      }
+      ++iIdx;
+   }
+
+   m_lbMDB.InsertString( iIdx, lpcField );
+   m_lbMDB.SetItemData( iIdx, dwID);
+   if( bSelect )
+   {
+      m_lbMDB.SetCurSel( iIdx );
+   }
 }
 
 void CTXTImportDlg::OnOK() 
@@ -480,7 +527,7 @@ void CTXTImportDlg::DeleteNameAttrib(CString strTxtField)
 			break;
 		}
 	}
-	int arrCheckList[128];
+	BYTE arrCheckList[256];
 	::ZeroMemory(arrCheckList, sizeof(arrCheckList));
 	m_cbbVezeteknev.GetLBText(m_cbbVezeteknev.GetCurSel(), strTxtField);
 	arrCheckList[_ttoi(strTxtField)] = 1;
@@ -515,4 +562,40 @@ void CTXTImportDlg::DeleteNameAttrib(CString strTxtField)
 			m_lbTXT.InsertString(idx, strTxtField);
 		}
 	}
+   ::ZeroMemory( arrCheckList, sizeof( arrCheckList ) );
+   for( int i = 0; i < m_lbMDB.GetCount(); ++i )
+   {
+      arrCheckList[ m_lbMDB.GetItemData( i ) ] = 1;
+   }
+   for( int i = 0; i < m_lcBinds.GetItemCount(); ++i )
+   {
+      arrCheckList[ m_lcBinds.GetItemData( i ) ] = 2;
+   }
+   for( int i = 0; i < m_theAttributeType.m_theArray.GetSize(); i++ )
+   {
+      ATTRIBUTE_TYPE *pAT = (ATTRIBUTE_TYPE*)m_theAttributeType.m_theArray.GetAt( i );
+      if( arrCheckList[ pAT->m_lAttributeID ] == 0 )
+      {
+         AddToMdbList( pAT->m_lAttributeID, pAT->m_strAttributeName, false );
+      }
+   }
+
+   //for( int i = 0; i < m_iTXTFieldCount; ++i )
+   //{
+   //   if( arrCheckList[ i ] == 0 )
+   //   {
+   //      m_cbbVezeteknev.GetLBText( i, strTxtField );
+   //      int idx = 0;
+   //      while( idx < m_lbTXT.GetCount() )
+   //      {
+   //         m_lbTXT.GetText( idx, strItem );
+   //         if( strItem >= strTxtField )
+   //         {
+   //            break;
+   //         }
+   //         ++idx;
+   //      }
+   //      m_lbTXT.InsertString( idx, strTxtField );
+   //   }
+   //}
 }
