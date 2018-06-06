@@ -139,7 +139,7 @@ int CResultDlg::FillList( void )
 
    if( n > 0 )
    {
-      m_lcPerson.SetItemState( 0, LVNI_SELECTED, LVNI_SELECTED );
+      m_lcPerson.SetItemState( 0, LVNI_SELECTED | LVNI_FOCUSED, LVNI_SELECTED | LVNI_FOCUSED );
       FillData();
    }
 
