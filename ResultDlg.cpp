@@ -79,7 +79,7 @@ BOOL CResultDlg::OnInitDialog()
 	}
 
 	FillList();
-	
+
 	return( TRUE );
 }
 
@@ -136,7 +136,14 @@ int CResultDlg::FillList( void )
 	CString strResult;
 	strResult.Format( "Találatok száma: %d  Listába betöltve: %d", iResult, m_lcPerson.GetItemCount() );
 	SetDlgItemText( IDC_STATIC_REPORT, strResult );
-	return( n );
+
+   if( n > 0 )
+   {
+      m_lcPerson.SetItemState( 0, LVNI_SELECTED, LVNI_SELECTED );
+      FillData();
+   }
+
+   return( n );
 }
 
 int CResultDlg::FillData( void )
@@ -164,7 +171,8 @@ int CResultDlg::FillData( void )
 
 		for( int i = 0; i < m_theAT.m_theArray.GetSize(); i++ )
 		{
-			ATTRIBUTE_TYPE *pAT = (ATTRIBUTE_TYPE*)m_theAT.m_theArray.GetAt( i );
+			ATTRIBUTE_TYPE *pAT = (ATTRIBUTE_TYPE*)m_theAT.m_theArray.GetAt( i ); 
+         if( pAT->m_iDataType < 7 )
 			{
 				int iAct = m_lcAttribs.InsertItem( i, pAT->m_strAttributeName );
 				m_lcAttribs.SetItemData( iAct, pAT->m_lAttributeID );
