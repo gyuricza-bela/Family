@@ -432,7 +432,7 @@ BOOL CBinDBCreator::ProcessDB_2( DWORD dwRogzitoID, LPCSTR lpcDBName, int iDB, i
 	pD->SetStatus( sPuffer );
 
 	CAttributeTypeSet ats;
-	ats.m_strDBName = lpcDBName;
+	ats.m_strDBName = SRCDB_NAME;
 	ats.Open();
 	while( !ats.IsEOF() )
 	{

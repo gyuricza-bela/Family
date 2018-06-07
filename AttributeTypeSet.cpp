@@ -30,7 +30,7 @@ CAttributeTypeSet::CAttributeTypeSet(CDaoDatabase* pdb)
 	//}}AFX_FIELD_INIT
 	m_nDefaultType = dbOpenDynaset;
 	m_strDBName = SRCDB_NAME;
-	m_strSort = _T("[Order]");
+	m_strSort = _T("[Order],[DataType]");
 }
 
 

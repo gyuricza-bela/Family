@@ -174,7 +174,7 @@ int CResultDlg::FillData( void )
 			ATTRIBUTE_TYPE *pAT = (ATTRIBUTE_TYPE*)m_theAT.m_theArray.GetAt( i ); 
          if( pAT->m_iDataType < 7 )
 			{
-				int iAct = m_lcAttribs.InsertItem( i, pAT->m_strAttributeName );
+				int iAct = m_lcAttribs.InsertItem( m_lcAttribs.GetItemCount(), pAT->m_strAttributeName );
 				m_lcAttribs.SetItemData( iAct, pAT->m_lAttributeID );
 			}
 		}
